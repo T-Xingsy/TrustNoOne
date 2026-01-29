@@ -8,12 +8,12 @@ datadance-onchain.backup-20260129-095947/
 
 # 第三方 SDK 和子模块
 DDC-Market-SDK/
-onchain-verifier/
 spoon-awesome-skill/
 spoon-core/
 spoon-starter/
 spoon-toolkit/
-spoonos-assistant/
+
+# 注意: onchain-verifier 和 spoonos-assistant 现在是 Git submodule，不应被排除
 
 # 项目文档（规划阶段）
 specs/

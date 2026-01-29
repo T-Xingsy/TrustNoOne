@@ -1,0 +1,6 @@
+[submodule "onchain-verifier"]
+	path = onchain-verifier
+	url = https://github.com/bonujel/onchain-verifier-skill.git
+[submodule "spoonos-assistant"]
+	path = spoonos-assistant
+	url = https://github.com/bonujel/spoonos-assistant-skill.git
