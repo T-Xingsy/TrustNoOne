@@ -1,0 +1,84 @@
+# AI Agent 相关目录
+.agent/
+.claude/
+.specify
+
+# 备份目录
+datadance-onchain.backup-20260129-095947/
+
+# 第三方 SDK 和子模块
+DDC-Market-SDK/
+onchain-verifier/
+spoon-awesome-skill/
+spoon-core/
+spoon-starter/
+spoon-toolkit/
+spoonos-assistant/
+
+# 项目文档（规划阶段）
+specs/
+
+# 环境变量和敏感配置
+.env
+.env.local
+.env.*.local
+
+# 项目规则文件
+CLAUDE.md
+
+# Python 相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 虚拟环境
+venv/
+ENV/
+env/
+.venv
+
+# IDE 相关
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 日志文件
+*.log
+logs/
+
+# 测试覆盖率
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Node.js 相关（如果有前端部分）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
