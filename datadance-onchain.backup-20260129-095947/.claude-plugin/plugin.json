@@ -1,0 +1,22 @@
+{
+  "name": "datadance-onchain",
+  "version": "0.1.0",
+  "description": "BSN-DDC SDK integration for Promise Breaker Detector project. Provides on-chain data querying and preprocessing capabilities for NFT/DDC verification.",
+  "author": {
+    "name": "Promise Breaker Team",
+    "email": "team@example.com"
+  },
+  "keywords": [
+    "blockchain",
+    "nft",
+    "ddc",
+    "bsn",
+    "data-processing",
+    "spoonos"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/datadance-onchain"
+  },
+  "license": "MIT"
+}
