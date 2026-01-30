@@ -102,9 +102,10 @@ class NFTProject(BaseModel):
     twitter_account: Optional[str] = Field(None, description="Twitter 账号")
     website_url: Optional[HttpUrl] = Field(None, description="官网 URL")
     whitepaper_url: Optional[HttpUrl] = Field(None, description="白皮书链接")
-    contract_address: Optional[str] = Field(None, description="智能合约地址")
+    contract_address: Optional[str] = Field(None, description="NFT 智能合约地址")
     github_repo: Optional[str] = Field(None, description="GitHub 仓库")
     treasury_address: Optional[str] = Field(None, description="国库地址")
+    opensea_slug: Optional[str] = Field(None, description="OpenSea 集合标识")
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
         description="创建时间"

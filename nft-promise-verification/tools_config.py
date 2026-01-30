@@ -4,16 +4,43 @@
 注册和配置 SpoonOS 工具
 - TwitterTool
 - WebScraperTool
+- MCPWebScraperTool (新增: MCP 协议抓取)
 - PromiseExtractorTool
+- Chainbase 链上数据工具
+- GitHub 开发力审计工具
 """
 from typing import List
-from spoon_core.tools.base import BaseTool
-from spoon_core.tools.tool_manager import ToolManager
+from spoon_ai.tools import BaseTool, ToolManager
 import structlog
+import sys
 
 from .tools.twitter_scraper import TwitterScraper
 from .tools.web_scraper import WebScraper
+from .tools.mcp_scraper import SyncMCPWebScraper
 from .tools.promise_extractor import PromiseExtractor
+
+# Spoon-Toolkit 官方工具
+try:
+    from spoon_toolkits.data_platforms.chainbase import (
+        GetAccountBalanceTool,
+        GetAccountTransactionsTool,
+        GetAccountTokensTool,
+        GetAccountNFTsTool,
+        GetTokenMetadataTool
+    )
+    CHAINBASE_AVAILABLE = True
+except ImportError:
+    CHAINBASE_AVAILABLE = False
+
+try:
+    from spoon_toolkits.github import (
+        GetGitHubCommitsTool,
+        GetGitHubPullRequestsTool,
+        GetGitHubIssuesTool
+    )
+    GITHUB_AVAILABLE = True
+except ImportError:
+    GITHUB_AVAILABLE = False
 
 logger = structlog.get_logger(__name__)
 
@@ -153,6 +180,85 @@ class PromiseExtractorTool(BaseTool):
             raise
 
 
+class MCPWebScraperTool(BaseTool):
+    """
+    MCP 协议网页抓取工具
+
+    使用 Model Context Protocol (MCP) 和 mcp-server-fetch
+    相比 WebScraperTool 的优势:
+    - 使用标准 MCP 协议
+    - 可与 SpoonReactAI 无缝集成
+    - 支持 JavaScript 渲染后的内容
+    """
+
+    name = "mcp_web_scraper"
+    description = (
+        "使用 MCP 协议抓取网页内容（支持动态内容）。"
+        "输入: url (目标 URL), output_format (输出格式: markdown/text/html, 默认 markdown)"
+        "输出: 包含 url, title, content, format, status 的字典"
+        "注意: 某些网站可能有反爬保护，返回 403"
+    )
+
+    def __init__(self):
+        super().__init__()
+        try:
+            self.scraper = SyncMCPWebScraper()
+            self.available = True
+        except ImportError as e:
+            logger.warning(
+                "MCP Web Scraper 不可用",
+                error=str(e),
+                hint="pip install mcp mcp-server-fetch"
+            )
+            self.scraper = None
+            self.available = False
+
+    def _run(
+        self,
+        url: str,
+        output_format: str = "markdown"
+    ) -> dict:
+        """
+        执行 MCP 网页抓取
+
+        Args:
+            url: 目标 URL
+            output_format: 输出格式
+
+        Returns:
+            网页内容字典
+        """
+        if not self.available:
+            raise RuntimeError(
+                "MCP Web Scraper 不可用，请安装: pip install mcp mcp-server-fetch"
+            )
+
+        try:
+            content = self.scraper.fetch(
+                url=url,
+                output_format=output_format
+            )
+
+            # 检查是否成功
+            if content.get("status") == "error":
+                error_msg = content.get("error", "Unknown error")
+                if "403" in error_msg:
+                    logger.warning(
+                        "网页返回 403 (反爬保护)",
+                        url=url
+                    )
+                raise RuntimeError(f"抓取失败: {error_msg}")
+
+            return content
+        except Exception as e:
+            logger.error(
+                "MCP 网页抓取工具执行失败",
+                url=url,
+                error=str(e)
+            )
+            raise
+
+
 def register_tools(llm_manager) -> ToolManager:
     """
     注册所有工具到 ToolManager
@@ -165,14 +271,54 @@ def register_tools(llm_manager) -> ToolManager:
     """
     tool_manager = ToolManager()
 
-    # 注册工具
+    # ========== 原有工具 ==========
     twitter_tool = TwitterTool()
     web_scraper_tool = WebScraperTool()
+    mcp_web_scraper_tool = MCPWebScraperTool()  # 新增: MCP 网页抓取
     promise_extractor_tool = PromiseExtractorTool(llm_manager)
 
     tool_manager.register_tool(twitter_tool)
     tool_manager.register_tool(web_scraper_tool)
+    tool_manager.register_tool(mcp_web_scraper_tool)  # 注册 MCP 工具
     tool_manager.register_tool(promise_extractor_tool)
+
+    # ========== Chainbase 链上数据工具 ==========
+    if CHAINBASE_AVAILABLE:
+        chainbase_balance_tool = GetAccountBalanceTool()
+        chainbase_txs_tool = GetAccountTransactionsTool()
+        chainbase_tokens_tool = GetAccountTokensTool()
+        chainbase_nfts_tool = GetAccountNFTsTool()
+        chainbase_metadata_tool = GetTokenMetadataTool()
+
+        tool_manager.register_tool(chainbase_balance_tool)
+        tool_manager.register_tool(chainbase_txs_tool)
+        tool_manager.register_tool(chainbase_tokens_tool)
+        tool_manager.register_tool(chainbase_nfts_tool)
+        tool_manager.register_tool(chainbase_metadata_tool)
+
+        logger.info("Chainbase 工具注册成功")
+    else:
+        logger.warning(
+            "Chainbase 工具不可用，请安装 spoon-toolkit: "
+            "pip install spoon-toolkit"
+        )
+
+    # ========== GitHub 开发力审计工具 ==========
+    if GITHUB_AVAILABLE:
+        github_commits_tool = GetGitHubCommitsTool()
+        github_prs_tool = GetGitHubPullRequestsTool()
+        github_issues_tool = GetGitHubIssuesTool()
+
+        tool_manager.register_tool(github_commits_tool)
+        tool_manager.register_tool(github_prs_tool)
+        tool_manager.register_tool(github_issues_tool)
+
+        logger.info("GitHub 工具注册成功")
+    else:
+        logger.warning(
+            "GitHub 工具不可用，请安装 spoon-toolkit: "
+            "pip install spoon-toolkit"
+        )
 
     logger.info(
         "工具注册完成",
