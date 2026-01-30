@@ -86,3 +86,7 @@ yarn-error.log*
 
 # 插件
 .serena/
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
