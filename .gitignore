@@ -12,11 +12,12 @@ spoon-awesome-skill/
 spoon-core/
 spoon-starter/
 spoon-toolkit/
+onchain-verifier/
+spoonos-assistant/
 
 # 注意: onchain-verifier 和 spoonos-assistant 现在是 Git submodule，不应被排除
 
 # 项目文档（规划阶段）
-specs/
 
 # 环境变量和敏感配置
 .env
@@ -82,3 +83,6 @@ yarn-error.log*
 *.tmp
 *.temp
 .cache/
+
+# 插件
+.serena/
