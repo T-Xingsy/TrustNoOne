@@ -1,7 +1,6 @@
 # SpoonOS Framework
-spoon-core==0.3.6
-spoon-toolkit==0.2.5
-spoon-starter==0.1.0
+spoon-ai-sdk==0.3.6
+spoon-toolkit>=0.1.0
 
 # Web Framework
 fastapi==0.109.0

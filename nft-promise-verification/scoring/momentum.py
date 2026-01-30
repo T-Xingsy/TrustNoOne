@@ -22,6 +22,7 @@ class MomentumScorer:
         self,
         twitter_data: Dict[str, Any],
         sentiment_analysis: Dict[str, Any],
+        market_data: Dict[str, Any] = None,
         time_window_days: int = 30
     ) -> Dict[str, Any]:
         """
@@ -30,6 +31,7 @@ class MomentumScorer:
         Args:
             twitter_data: Twitter 数据（粉丝数、互动数等）
             sentiment_analysis: 情感分析结果
+            market_data: OpenSea 市场数据（可选）
             time_window_days: 时间窗口（天）
 
         Returns:
@@ -37,11 +39,13 @@ class MomentumScorer:
         """
         logger.info(
             "开始计算社区动能审计评分",
-            followers=twitter_data.get("followers_count", 0),
+            has_twitter=bool(twitter_data),
+            has_market=bool(market_data),
             time_window=time_window_days
         )
 
-        if not twitter_data:
+        # 如果没有任何数据
+        if not twitter_data and not market_data:
             return {
                 "score": 0,
                 "dimension": "momentum",
@@ -49,41 +53,68 @@ class MomentumScorer:
                 "message": "没有社区数据"
             }
 
-        # 提取指标
-        followers_count = twitter_data.get("followers_count", 0)
-        engagement_rate = twitter_data.get("engagement_rate", 0.0)
-        growth_rate = twitter_data.get("growth_rate", 0.0)
+        # ========== Twitter 维度评分 ==========
+        twitter_score = 0
+        if twitter_data:
+            # 提取指标
+            followers_count = twitter_data.get("followers_count", 0)
+            engagement_rate = twitter_data.get("engagement_rate", 0.0)
+            growth_rate = twitter_data.get("growth_rate", 0.0)
 
-        # 情感分析指标
-        positive_ratio = sentiment_analysis.get("positive_ratio", 0.0)
-        sybil_risk = sentiment_analysis.get("sybil_risk", 0.0)
+            # 情感分析指标
+            positive_ratio = sentiment_analysis.get("positive_ratio", 0.0)
+            sybil_risk = sentiment_analysis.get("sybil_risk", 0.0)
 
-        # 计算各维度评分
-        # 粉丝数评分（>= 10000 得满分）
-        followers_score = min(100, int(followers_count / 100))
+            # 计算各维度评分
+            followers_score = min(100, int(followers_count / 100))
+            engagement_score = min(100, int(engagement_rate * 2000))
+            growth_score = min(100, int(growth_rate * 1000))
+            sentiment_score = min(100, int(positive_ratio * 100 / 0.7))
+            sybil_penalty = int(sybil_risk * 100)
 
-        # 互动率评分（>= 5% 得满分）
-        engagement_score = min(100, int(engagement_rate * 2000))
+            twitter_score = max(0, int(
+                followers_score * 0.2 +
+                engagement_score * 0.3 +
+                growth_score * 0.2 +
+                sentiment_score * 0.3
+            ) - sybil_penalty)
 
-        # 增长率评分（>= 10% 得满分）
-        growth_score = min(100, int(growth_rate * 1000))
+        # ========== 市场活跃度评分 ==========
+        market_score = 0
+        if market_data:
+            floor_price = market_data.get("floor_price", 0)
+            day_volume = market_data.get("day_volume", 0)
+            day_sales = market_data.get("day_sales", 0)
+            liquidity_score = market_data.get("liquidity_score", "UNKNOWN")
 
-        # 情感评分（正面情感 >= 70% 得满分）
-        sentiment_score = min(100, int(positive_ratio * 100 / 0.7))
+            # 地板价评分（>= 1 ETH 得满分）
+            floor_score = min(100, int(floor_price * 100))
 
-        # Sybil 风险惩罚（风险 >= 50% 扣 50 分）
-        sybil_penalty = int(sybil_risk * 100)
+            # 交易量评分（>= 100 ETH 得满分）
+            volume_score = min(100, int(day_volume * 10))
 
-        # 加权平均
-        base_score = int(
-            followers_score * 0.2 +
-            engagement_score * 0.3 +
-            growth_score * 0.2 +
-            sentiment_score * 0.3
-        )
+            # 交易次数评分（>= 50 次/天 得满分）
+            sales_score = min(100, int(day_sales * 2))
 
-        # 最终评分
-        score = max(0, base_score - sybil_penalty)
+            # 流动性评分
+            liquidity_map = {"HIGH": 100, "MEDIUM": 70, "LOW": 40, "VERY LOW": 10, "UNKNOWN": 50}
+            liquidity_bonus = liquidity_map.get(liquidity_score, 50)
+
+            market_score = int(
+                floor_score * 0.3 +
+                volume_score * 0.3 +
+                sales_score * 0.2 +
+                liquidity_bonus * 0.2
+            )
+
+        # ========== 综合评分 ==========
+        # Twitter 占 60%，市场数据占 40%
+        if twitter_data and market_data:
+            score = int(twitter_score * 0.6 + market_score * 0.4)
+        elif twitter_data:
+            score = twitter_score
+        else:
+            score = market_score
 
         # 判断状态
         if score >= 80:
@@ -99,12 +130,27 @@ class MomentumScorer:
             status = "poor"
             message = "社区动能较弱"
 
+        details = {}
+        if twitter_data:
+            details["twitter"] = {
+                "followers_count": twitter_data.get("followers_count", 0),
+                "engagement_rate": twitter_data.get("engagement_rate", 0),
+                "tweets_count": twitter_data.get("tweets_count", 0)
+            }
+        if market_data:
+            details["market"] = {
+                "floor_price": market_data.get("floor_price", 0),
+                "day_volume": market_data.get("day_volume", 0),
+                "day_sales": market_data.get("day_sales", 0),
+                "liquidity_score": market_data.get("liquidity_score", "UNKNOWN")
+            }
+
         logger.info(
             "社区动能审计评分完成",
             score=score,
-            followers=followers_count,
-            engagement=round(engagement_rate, 4),
-            sybil_risk=round(sybil_risk, 4)
+            twitter_score=twitter_score,
+            market_score=market_score,
+            status=status
         )
 
         return {
@@ -112,14 +158,7 @@ class MomentumScorer:
             "dimension": "momentum",
             "status": status,
             "message": message,
-            "details": {
-                "followers_count": followers_count,
-                "engagement_rate": round(engagement_rate, 4),
-                "growth_rate": round(growth_rate, 4),
-                "positive_ratio": round(positive_ratio, 4),
-                "sybil_risk": round(sybil_risk, 4),
-                "time_window_days": time_window_days
-            }
+            "details": details
         }
 
     def analyze_sentiment(
