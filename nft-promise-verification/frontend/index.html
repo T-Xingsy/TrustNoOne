@@ -520,19 +520,28 @@
         }
 
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
+            background: var(--color-border);
         }
 
-        .status-dot.active {
-            background: var(--color-success);
+        .status-dot.high {
+            background: var(--color-danger);
             animation: pulse-dot 2s ease-in-out infinite;
         }
 
+        .status-dot.medium {
+            background: var(--color-warning);
+        }
+
+        .status-dot.low {
+            background: var(--color-success);
+        }
+
         @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px currentColor; }
+            50% { opacity: 0.5; box-shadow: 0 0 10px currentColor; }
         }
 
         /* ========================================
@@ -636,10 +645,6 @@
                     <span>平均画饼指数</span>
                     <span class="stat-value" style="color: var(--color-warning)">67</span>
                 </div>
-                <div class="stat-item">
-                    <span>在线</span>
-                    <span class="stat-value">●</span>
-                </div>
             </div>
         </header>
 
@@ -701,7 +706,7 @@
                         </div>
                         <div class="stat">
                             <span class="stat-label">状态</span>
-                            <span class="status-badge"><span class="status-dot active"></span>高风险</span>
+                            <span class="status-badge"><span class="status-dot high"></span>高风险</span>
                         </div>
                     </div>
                 </article>
@@ -726,7 +731,7 @@
                         </div>
                         <div class="stat">
                             <span class="stat-label">状态</span>
-                            <span class="status-badge"><span class="status-dot"></span>中风险</span>
+                            <span class="status-badge"><span class="status-dot medium"></span>中风险</span>
                         </div>
                     </div>
                 </article>
@@ -751,7 +756,7 @@
                         </div>
                         <div class="stat">
                             <span class="stat-label">状态</span>
-                            <span class="status-badge"><span class="status-dot"></span>可信</span>
+                            <span class="status-badge"><span class="status-dot low"></span>可信</span>
                         </div>
                     </div>
                 </article>
@@ -776,7 +781,7 @@
                         </div>
                         <div class="stat">
                             <span class="stat-label">状态</span>
-                            <span class="status-badge"><span class="status-dot active"></span>高风险</span>
+                            <span class="status-badge"><span class="status-dot high"></span>高风险</span>
                         </div>
                     </div>
                 </article>
@@ -789,7 +794,7 @@
             <div class="footer-links">
                 <a href="#">关于</a>
                 <a href="#">API</a>
-                <a href="#">GitHub</a>
+                <a href="https://github.com/bonujel/nft-promise-verification" target="_blank">GitHub</a>
             </div>
         </footer>
     </div>

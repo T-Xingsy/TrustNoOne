@@ -895,61 +895,51 @@
             <!-- 雷达图 -->
             <div class="radar-chart-container">
                 <svg class="radar-chart" viewBox="0 0 300 300">
-                    <!-- 背景网格 (五边形) -->
-                    <!-- 中心 (150,150), 半径 120 -->
-                    <!-- 五个顶点: 顶部(150,30), 右上(264,95), 右下(229,247), 左下(71,247), 左上(36,95) -->
+                    <!-- 背景网格 (正五边形) -->
                     <g class="radar-grid" stroke="var(--color-border)" fill="none" stroke-width="1">
-                        <!-- 外圈 (100%) - 半径 120 -->
-                        <polygon points="150,30 264,95 229,247 71,247 36,95"/>
-                        <!-- 80% - 半径 96 -->
-                        <polygon points="150,54 247,110 219,228 81,228 53,110"/>
-                        <!-- 60% - 半径 72 -->
-                        <polygon points="150,78 230,125 209,209 91,209 70,125"/>
-                        <!-- 40% - 半径 48 -->
-                        <polygon points="150,102 214,140 199,190 101,190 86,140"/>
-                        <!-- 20% - 半径 24 -->
-                        <polygon points="150,126 197,155 188,171 112,171 103,155"/>
+                        <!-- 100% - 半径 120 -->
+                        <polygon points="150,30 264,113 220,247 80,247 36,113"/>
+                        <!-- 75% - 半径 90 -->
+                        <polygon points="150,60 236,135 195,223 105,223 64,135"/>
+                        <!-- 50% - 半径 60 -->
+                        <polygon points="150,90 207,157 170,199 130,199 93,157"/>
+                        <!-- 25% - 半径 30 -->
+                        <polygon points="150,120 178,179 145,175 155,175 122,179"/>
                     </g>
 
                     <!-- 轴线 (从中心到各顶点) -->
                     <g class="radar-axes" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4">
                         <line x1="150" y1="150" x2="150" y2="30"/>
-                        <line x1="150" y1="150" x2="264" y2="95"/>
-                        <line x1="150" y1="150" x2="229" y2="247"/>
-                        <line x1="150" y1="150" x2="71" y2="247"/>
-                        <line x1="150" y1="150" x2="36" y2="95"/>
+                        <line x1="150" y1="150" x2="264" y2="113"/>
+                        <line x1="150" y1="150" x2="220" y2="247"/>
+                        <line x1="150" y1="150" x2="80" y2="247"/>
+                        <line x1="150" y1="150" x2="36" y2="113"/>
                     </g>
 
                     <!-- 数据区域 -->
-                    <!-- 诚信32%: 150-(120*0.32*1)=111, 150-(120*0.32*0)=150 -> 错误 -->
-                    <!-- 正确计算: 每个轴向从中心(150,150)到顶点的方向上，按比例取点 -->
-                    <!-- 诚信32%: 顶部轴, y = 150 - 120*0.32 = 111.2 -->
-                    <!-- 公平性55%: 右上轴, x = 150 + (264-150)*0.55 = 212.7, y = 150 + (95-150)*0.55 = 119.75 -->
-                    <!-- 开发力41%: 左上轴, x = 150 + (36-150)*0.41 = 103.24, y = 150 + (95-150)*0.41 = 127.45 -->
-                    <!-- 财务72%: 右下轴, x = 150 + (229-150)*0.72 = 206.88, y = 150 + (247-150)*0.72 = 219.84 -->
-                    <!-- 动能58%: 左下轴, x = 150 + (71-150)*0.58 = 104.18, y = 150 + (247-150)*0.58 = 206.26 -->
+                    <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
                     <g class="radar-data">
                         <polygon class="radar-polygon"
-                            points="150,111 213,120 103,127 207,220 104,206"
-                            fill="rgba(255, 45, 45, 0.2)"
+                            points="150,112 239,136 122,142 175,232 97,176"
+                            fill="rgba(204, 51, 51, 0.25)"
                             stroke="var(--color-danger)"
                             stroke-width="2"/>
 
                         <!-- 数据点 -->
-                        <circle cx="150" cy="111" r="5" fill="var(--color-danger)" class="radar-point"/>
-                        <circle cx="213" cy="120" r="5" fill="var(--color-warning)" class="radar-point"/>
-                        <circle cx="103" cy="127" r="5" fill="var(--color-danger)" class="radar-point"/>
-                        <circle cx="207" cy="220" r="5" fill="var(--color-success)" class="radar-point"/>
-                        <circle cx="104" cy="206" r="5" fill="var(--color-warning)" class="radar-point"/>
+                        <circle cx="150" cy="112" r="5" fill="var(--color-danger)" class="radar-point"/>
+                        <circle cx="239" cy="136" r="5" fill="var(--color-warning)" class="radar-point"/>
+                        <circle cx="122" cy="142" r="5" fill="var(--color-danger)" class="radar-point"/>
+                        <circle cx="175" cy="232" r="5" fill="var(--color-success)" class="radar-point"/>
+                        <circle cx="97" cy="176" r="5" fill="var(--color-warning)" class="radar-point"/>
                     </g>
 
                     <!-- 标签 -->
-                    <g class="radar-labels" font-size="11" fill="var(--color-text-secondary)">
-                        <text x="150" y="20" text-anchor="middle" font-weight="700">诚信</text>
-                        <text x="275" y="95" text-anchor="start" font-weight="700">公平性</text>
-                        <text x="245" y="268" text-anchor="middle" font-weight="700">财务</text>
-                        <text x="55" y="268" text-anchor="middle" font-weight="700">动能</text>
-                        <text x="25" y="95" text-anchor="end" font-weight="700">开发力</text>
+                    <g class="radar-labels" font-size="10" fill="var(--color-text-secondary)" style="pointer-events: none;">
+                        <text x="150" y="16" text-anchor="middle" font-weight="700">诚信</text>
+                        <text x="268" y="105" text-anchor="start" font-weight="700">公平性</text>
+                        <text x="233" y="272" text-anchor="middle" font-weight="700">财务</text>
+                        <text x="67" y="272" text-anchor="middle" font-weight="700">动能</text>
+                        <text x="32" y="105" text-anchor="end" font-weight="700">开发力</text>
                     </g>
                 </svg>
 
