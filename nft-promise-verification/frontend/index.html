@@ -952,18 +952,6 @@
            CONTRACT ADDRESS TOOLTIP
            ======================================== */
 
-        .website-link {
-            color: var(--color-info);
-            text-decoration: none;
-            font-size: 0.75rem;
-            transition: opacity 0.2s ease;
-        }
-
-        .website-link:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-        }
-
         .contract-link {
             position: relative;
             display: inline-flex;
@@ -1336,9 +1324,7 @@
                 <div class="project-header">
                     <div>
                         <h3 class="project-name">${project.name}</h3>
-                        <p class="project-meta">${project.twitter} · 官网
-                            <a href="https://${project.website}" target="_blank" class="website-link">${project.website || '暂无'}</a>
-                            · 合约
+                        <p class="project-meta">${project.twitter} · 合约
                             <span class="contract-link" data-contract="${project.contract}">
                                 <span class="contract-address">${project.contractShort}</span>
                                 <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
