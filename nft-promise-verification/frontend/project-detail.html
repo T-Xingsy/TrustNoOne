@@ -307,24 +307,40 @@
             margin-bottom: var(--space-3xl);
         }
 
+        /* 五维布局容器 */
+        .dimensions-layout {
+            display: flex;
+            gap: var(--space-2xl);
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .dimensions-layout {
+                flex-direction: column;
+            }
+        }
+
         /* ========================================
            RADAR CHART
            ======================================== */
 
         .radar-chart-container {
+            flex: 0 0 auto;
+            padding: var(--space-xl);
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            min-width: 320px;
+        }
+
+        .radar-chart-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: var(--space-2xl);
-            padding: var(--space-2xl);
-            background: var(--color-bg-secondary);
-            border: var(--border-thin) solid var(--color-border);
         }
 
         .radar-chart {
-            width: 100%;
-            max-width: 350px;
-            height: auto;
+            width: 280px;
+            height: 280px;
             filter: drop-shadow(0 0 10px rgba(255, 45, 45, 0.1));
         }
 
@@ -355,21 +371,23 @@
 
         .radar-legend {
             display: flex;
-            gap: var(--space-lg);
-            margin-top: var(--space-lg);
-            font-size: 0.75rem;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+            font-size: 0.7rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: var(--space-sm);
+            gap: var(--space-xs);
             color: var(--color-text-secondary);
         }
 
         .legend-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
         }
 
@@ -390,6 +408,95 @@
             width: 4px;
             height: 1em;
             background: var(--color-info);
+        }
+
+        /* 右侧参数列表 */
+        .dimensions-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .dimension-row {
+            display: grid;
+            grid-template-columns: 80px 60px 1fr;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            transition: all 0.2s ease;
+        }
+
+        .dimension-row:hover {
+            border-color: var(--color-info-glow);
+        }
+
+        .dimension-row.low {
+            border-left: 3px solid var(--color-danger);
+        }
+
+        .dimension-row.medium {
+            border-left: 3px solid var(--color-warning);
+        }
+
+        .dimension-row.high {
+            border-left: 3px solid var(--color-success);
+        }
+
+        .dimension-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            font-family: var(--font-chinese);
+        }
+
+        .dimension-weight {
+            font-size: 0.65rem;
+            color: var(--color-text-tertiary);
+        }
+
+        .dimension-score-inline {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .dimension-score-inline.low { color: var(--color-danger); }
+        .dimension-score-inline.medium { color: var(--color-warning); }
+        .dimension-score-inline.high { color: var(--color-success); }
+
+        .dimension-detail {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .dimension-bar-inline {
+            height: 4px;
+            background: var(--color-bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .dimension-bar-fill-inline {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+
+        .dimension-bar-fill-inline.low { background: var(--color-danger); }
+        .dimension-bar-fill-inline.medium { background: var(--color-warning); }
+        .dimension-bar-fill-inline.high { background: var(--color-success); }
+
+        .dimension-explanation {
+            font-size: 0.7rem;
+            color: var(--color-text-tertiary);
         }
 
         .dimensions-grid {
@@ -847,6 +954,21 @@
             .dimensions-grid {
                 grid-template-columns: 1fr;
             }
+
+            .dimension-row {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+
+            .dimension-score-inline {
+                order: -1;
+                text-align: left;
+            }
+
+            .radar-chart-container {
+                min-width: auto;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -895,123 +1017,153 @@
         <section class="dimensions-section">
             <h2 class="section-title">五维审计</h2>
 
-            <!-- 雷达图 -->
-            <div class="radar-chart-container">
-                <svg class="radar-chart" viewBox="0 0 300 300">
-                    <!-- 背景网格 (正五边形) -->
-                    <g class="radar-grid" stroke="var(--color-border)" fill="none" stroke-width="1">
-                        <!-- 100% - 半径 120 -->
-                        <polygon points="150,30 264,113 220,247 80,247 36,113"/>
-                        <!-- 75% - 半径 90 -->
-                        <polygon points="150,60 236,135 195,223 105,223 64,135"/>
-                        <!-- 50% - 半径 60 -->
-                        <polygon points="150,90 207,157 170,199 130,199 93,157"/>
-                        <!-- 25% - 半径 30 -->
-                        <polygon points="150,120 178,179 145,175 155,175 122,179"/>
-                    </g>
+            <div class="dimensions-layout">
+                <!-- 左侧雷达图 -->
+                <div class="radar-chart-container">
+                    <div class="radar-chart-wrapper">
+                        <svg class="radar-chart" viewBox="0 0 300 300">
+                            <!-- 背景网格 (正五边形) -->
+                            <g class="radar-grid" stroke="var(--color-border)" fill="none" stroke-width="1">
+                                <!-- 100% - 半径 120 -->
+                                <polygon points="150,30 264,113 220,247 80,247 36,113"/>
+                                <!-- 75% - 半径 90 -->
+                                <polygon points="150,60 236,135 195,223 105,223 64,135"/>
+                                <!-- 50% - 半径 60 -->
+                                <polygon points="150,90 207,157 170,199 130,199 93,157"/>
+                                <!-- 25% - 半径 30 -->
+                                <polygon points="150,120 178,179 145,175 155,175 122,179"/>
+                            </g>
 
-                    <!-- 轴线 (从中心到各顶点) -->
-                    <g class="radar-axes" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4">
-                        <line x1="150" y1="150" x2="150" y2="30"/>
-                        <line x1="150" y1="150" x2="264" y2="113"/>
-                        <line x1="150" y1="150" x2="220" y2="247"/>
-                        <line x1="150" y1="150" x2="80" y2="247"/>
-                        <line x1="150" y1="150" x2="36" y2="113"/>
-                    </g>
+                            <!-- 轴线 (从中心到各顶点) -->
+                            <g class="radar-axes" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4">
+                                <line x1="150" y1="150" x2="150" y2="30"/>
+                                <line x1="150" y1="150" x2="264" y2="113"/>
+                                <line x1="150" y1="150" x2="220" y2="247"/>
+                                <line x1="150" y1="150" x2="80" y2="247"/>
+                                <line x1="150" y1="150" x2="36" y2="113"/>
+                            </g>
 
-                    <!-- 数据区域 -->
-                    <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
-                    <g class="radar-data">
-                        <polygon class="radar-polygon"
-                            points="150,112 239,136 122,142 175,232 97,176"
-                            fill="rgba(204, 51, 51, 0.25)"
-                            stroke="var(--color-danger)"
-                            stroke-width="2"/>
+                            <!-- 数据区域 -->
+                            <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
+                            <g class="radar-data">
+                                <polygon class="radar-polygon"
+                                    points="150,112 239,136 122,142 175,232 97,176"
+                                    fill="rgba(204, 51, 51, 0.25)"
+                                    stroke="var(--color-danger)"
+                                    stroke-width="2"/>
 
-                        <!-- 数据点 -->
-                        <circle cx="150" cy="112" r="5" fill="var(--color-danger)" class="radar-point"/>
-                        <circle cx="239" cy="136" r="5" fill="var(--color-warning)" class="radar-point"/>
-                        <circle cx="122" cy="142" r="5" fill="var(--color-danger)" class="radar-point"/>
-                        <circle cx="175" cy="232" r="5" fill="var(--color-success)" class="radar-point"/>
-                        <circle cx="97" cy="176" r="5" fill="var(--color-warning)" class="radar-point"/>
-                    </g>
+                                <!-- 数据点 -->
+                                <circle cx="150" cy="112" r="5" fill="var(--color-danger)" class="radar-point"/>
+                                <circle cx="239" cy="136" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="122" cy="142" r="5" fill="var(--color-danger)" class="radar-point"/>
+                                <circle cx="175" cy="232" r="5" fill="var(--color-success)" class="radar-point"/>
+                                <circle cx="97" cy="176" r="5" fill="var(--color-warning)" class="radar-point"/>
+                            </g>
 
-                    <!-- 标签 -->
-                    <g class="radar-labels" font-size="10" fill="var(--color-text-secondary)" style="pointer-events: none;">
-                        <text x="150" y="16" text-anchor="middle" font-weight="700">诚信</text>
-                        <text x="268" y="105" text-anchor="start" font-weight="700">公平性</text>
-                        <text x="233" y="272" text-anchor="middle" font-weight="700">财务</text>
-                        <text x="67" y="272" text-anchor="middle" font-weight="700">动能</text>
-                        <text x="32" y="105" text-anchor="end" font-weight="700">开发力</text>
-                    </g>
-                </svg>
+                            <!-- 标签 -->
+                            <g class="radar-labels" font-size="10" fill="var(--color-text-secondary)" style="pointer-events: none;">
+                                <text x="150" y="16" text-anchor="middle" font-weight="700">诚信</text>
+                                <text x="268" y="105" text-anchor="start" font-weight="700">公平性</text>
+                                <text x="233" y="272" text-anchor="middle" font-weight="700">财务</text>
+                                <text x="67" y="272" text-anchor="middle" font-weight="700">动能</text>
+                                <text x="32" y="105" text-anchor="end" font-weight="700">开发力</text>
+                            </g>
+                        </svg>
 
-                <!-- 雷达图图例 -->
-                <div class="radar-legend">
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background: var(--color-danger);"></span>
-                        <span>低分 (&lt;50)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background: var(--color-warning);"></span>
-                        <span>中等 (50-70)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot" style="background: var(--color-success);"></span>
-                        <span>高分 (&gt;70)</span>
+                        <!-- 雷达图图例 -->
+                        <div class="radar-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot" style="background: var(--color-danger);"></span>
+                                <span>&lt;50</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot" style="background: var(--color-warning);"></span>
+                                <span>50-70</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot" style="background: var(--color-success);"></span>
+                                <span>&gt;70</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="dimensions-grid">
-                <!-- 诚信 -->
-                <div class="dimension-card low" style="--score-percent: 32%;">
-                    <div class="dimension-name">诚信审计 (30%)</div>
-                    <div class="dimension-score low">32</div>
-                    <div class="dimension-bar">
-                        <div class="dimension-bar-fill low" style="width: 32%;"></div>
+                <!-- 右侧参数说明 -->
+                <div class="dimensions-list">
+                    <!-- 诚信 -->
+                    <div class="dimension-row low">
+                        <div>
+                            <div class="dimension-label">诚信</div>
+                            <div class="dimension-weight">权重 30%</div>
+                        </div>
+                        <div class="dimension-score-inline low">32</div>
+                        <div class="dimension-detail">
+                            <div class="dimension-bar-inline">
+                                <div class="dimension-bar-fill-inline low" style="width: 32%;"></div>
+                            </div>
+                            <div class="dimension-explanation">10条承诺中仅3条兑现，诚信得分偏低</div>
+                        </div>
                     </div>
-                    <div class="dimension-desc">10条承诺中仅3条兑现</div>
-                </div>
 
-                <!-- 公平性 -->
-                <div class="dimension-card medium" style="--score-percent: 55%;">
-                    <div class="dimension-name">公平性 (20%)</div>
-                    <div class="dimension-score medium">55</div>
-                    <div class="dimension-bar">
-                        <div class="dimension-bar-fill medium" style="width: 55%;"></div>
+                    <!-- 公平性 -->
+                    <div class="dimension-row medium">
+                        <div>
+                            <div class="dimension-label">公平性</div>
+                            <div class="dimension-weight">权重 20%</div>
+                        </div>
+                        <div class="dimension-score-inline medium">55</div>
+                        <div class="dimension-detail">
+                            <div class="dimension-bar-inline">
+                                <div class="dimension-bar-fill-inline medium" style="width: 55%;"></div>
+                            </div>
+                            <div class="dimension-explanation">NFT分布中度集中，Top 10持有约35%</div>
+                        </div>
                     </div>
-                    <div class="dimension-desc">NFT 分布中度集中</div>
-                </div>
 
-                <!-- 开发力 -->
-                <div class="dimension-card low" style="--score-percent: 41%;">
-                    <div class="dimension-name">开发力 (20%)</div>
-                    <div class="dimension-score low">41</div>
-                    <div class="dimension-bar">
-                        <div class="dimension-bar-fill low" style="width: 41%;"></div>
+                    <!-- 开发力 -->
+                    <div class="dimension-row low">
+                        <div>
+                            <div class="dimension-label">开发力</div>
+                            <div class="dimension-weight">权重 20%</div>
+                        </div>
+                        <div class="dimension-score-inline low">41</div>
+                        <div class="dimension-detail">
+                            <div class="dimension-bar-inline">
+                                <div class="dimension-bar-fill-inline low" style="width: 41%;"></div>
+                            </div>
+                            <div class="dimension-explanation">GitHub活跃度下降，近6个月平均月提交8次</div>
+                        </div>
                     </div>
-                    <div class="dimension-desc">GitHub 活跃度下降</div>
-                </div>
 
-                <!-- 财务稳定性 -->
-                <div class="dimension-card high" style="--score-percent: 72%;">
-                    <div class="dimension-name">财务稳定性 (15%)</div>
-                    <div class="dimension-score high">72</div>
-                    <div class="dimension-bar">
-                        <div class="dimension-bar-fill high" style="width: 72%;"></div>
+                    <!-- 财务 -->
+                    <div class="dimension-row high">
+                        <div>
+                            <div class="dimension-label">财务</div>
+                            <div class="dimension-weight">权重 15%</div>
+                        </div>
+                        <div class="dimension-score-inline high">72</div>
+                        <div class="dimension-detail">
+                            <div class="dimension-bar-inline">
+                                <div class="dimension-bar-fill-inline high" style="width: 72%;"></div>
+                            </div>
+                            <div class="dimension-explanation">国库资金相对稳定，当前余额127 ETH</div>
+                        </div>
                     </div>
-                    <div class="dimension-desc">国库资金相对稳定</div>
-                </div>
 
-                <!-- 社区动能 -->
-                <div class="dimension-card medium" style="--score-percent: 58%;">
-                    <div class="dimension-name">社区动能 (15%)</div>
-                    <div class="dimension-score medium">58</div>
-                    <div class="dimension-bar">
-                        <div class="dimension-bar-fill medium" style="width: 58%;"></div>
+                    <!-- 动能 -->
+                    <div class="dimension-row medium">
+                        <div>
+                            <div class="dimension-label">动能</div>
+                            <div class="dimension-weight">权重 15%</div>
+                        </div>
+                        <div class="dimension-score-inline medium">58</div>
+                        <div class="dimension-detail">
+                            <div class="dimension-bar-inline">
+                                <div class="dimension-bar-fill-inline medium" style="width: 58%;"></div>
+                            </div>
+                            <div class="dimension-explanation">Twitter活跃度一般，周均推文约12条</div>
+                        </div>
                     </div>
-                    <div class="dimension-desc">Twitter 活跃度一般</div>
                 </div>
             </div>
         </section>
