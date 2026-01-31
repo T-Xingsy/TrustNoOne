@@ -971,6 +971,9 @@
             }
         }
     </style>
+    <!-- 引入项目数据和更新函数 -->
+    <script src="projects-data.js"></script>
+    <script src="page-updater.js"></script>
 </head>
 <body>
     <div class="container">
@@ -1047,17 +1050,17 @@
                             <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
                             <g class="radar-data">
                                 <polygon class="radar-polygon"
-                                    points="150,112 239,136 122,142 175,232 97,176"
+                                    points="150,112 213,130 200,220 109,206 103,135"
                                     fill="rgba(204, 51, 51, 0.25)"
                                     stroke="var(--color-danger)"
                                     stroke-width="2"/>
 
                                 <!-- 数据点 -->
                                 <circle cx="150" cy="112" r="5" fill="var(--color-danger)" class="radar-point"/>
-                                <circle cx="239" cy="136" r="5" fill="var(--color-warning)" class="radar-point"/>
-                                <circle cx="122" cy="142" r="5" fill="var(--color-danger)" class="radar-point"/>
-                                <circle cx="175" cy="232" r="5" fill="var(--color-success)" class="radar-point"/>
-                                <circle cx="97" cy="176" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="213" cy="130" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="200" cy="220" r="5" fill="var(--color-success)" class="radar-point"/>
+                                <circle cx="109" cy="206" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="103" cy="135" r="5" fill="var(--color-danger)" class="radar-point"/>
                             </g>
 
                             <!-- 标签 -->
@@ -1385,10 +1388,9 @@
     <script>
         // 获取要查看的项目名
         const projectName = sessionStorage.getItem('viewProject') || 'Azuki';
-        document.title = `${projectName} - 画饼指数 78 | 画饼粉碎机`;
-        document.querySelectorAll('.project-name').forEach(el => {
-            el.textContent = projectName;
-        });
+
+        // 加载项目数据并更新页面
+        updatePageWithProjectData(projectName);
 
         // 承诺卡片展开/折叠
         document.querySelectorAll('.promise-card').forEach(card => {
@@ -1427,15 +1429,6 @@
             });
         });
 
-        // 时间轴点击事件
-        document.querySelectorAll('.timeline-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const date = this.querySelector('.timeline-date').textContent;
-                const score = this.querySelector('.timeline-score-value').textContent;
-                showToast(`查看 ${date} 的历史版本（画饼指数: ${score}）`);
-            });
-        });
-
         // 分享功能
         function copyShareLink() {
             const url = window.location.href;
@@ -1449,21 +1442,6 @@
             const text = `🔍 ${projectName} 的画饼指数: ${score}！通过画饼粉碎机查看NFT项目可信度评估报告`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
             window.open(url, '_blank');
-        }
-
-        // Toast 提示
-        function showToast(message) {
-            let toast = document.querySelector('.share-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.className = 'share-toast';
-                document.body.appendChild(toast);
-            }
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
         }
 
         // 动画进度条
