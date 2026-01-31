@@ -44,7 +44,7 @@
 
 ## 🚀 5分钟快速上手
 
-```bash
+
 # 1. 克隆项目
 git clone https://github.com/your-org/hackason-project.git
 cd hackason-project/nft-promise-verification
