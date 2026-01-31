@@ -1689,8 +1689,15 @@
             }
         }
 
-        // 获取要查看的项目名
-        const projectName = sessionStorage.getItem('viewProject') || 'Azuki';
+        // 从 URL 参数获取要查看的项目名（更可靠）
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectName = urlParams.get('project');
+
+        // 如果没有项目名称参数，提示用户并返回首页
+        if (!projectName) {
+            alert('项目信息丢失，请返回首页重新选择');
+            window.location.href = 'index.html';
+        }
 
         // 加载项目数据并更新页面
         updatePageWithProjectData(projectName);

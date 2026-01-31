@@ -1411,15 +1411,15 @@
 
             // 点击事件
             card.addEventListener('click', function() {
-                sessionStorage.setItem('viewProject', project.name);
-                window.location.href = 'project-detail.html';
+                // 使用 URL 参数传递项目名称（更可靠）
+                window.location.href = `project-detail.html?project=${encodeURIComponent(project.name)}`;
             });
 
             card.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    sessionStorage.setItem('viewProject', project.name);
-                    window.location.href = 'project-detail.html';
+                    // 使用 URL 参数传递项目名称（更可靠）
+                    window.location.href = `project-detail.html?project=${encodeURIComponent(project.name)}`;
                 }
             });
 
@@ -1528,8 +1528,8 @@
                     `;
 
                     item.addEventListener('click', () => {
-                        sessionStorage.setItem('viewProject', project.name);
-                        window.location.href = 'project-detail.html';
+                        // 使用 URL 参数传递项目名称（更可靠）
+                        window.location.href = `project-detail.html?project=${encodeURIComponent(project.name)}`;
                     });
 
                     dropdownList.appendChild(item);
@@ -1611,11 +1611,11 @@
                 );
 
                 if (matchedProject) {
-                    sessionStorage.setItem('viewProject', matchedProject.name);
-                    window.location.href = 'project-detail.html';
+                    // 使用 URL 参数传递项目名称（更可靠）
+                    window.location.href = `project-detail.html?project=${encodeURIComponent(matchedProject.name)}`;
                 } else {
-                    sessionStorage.setItem('verifyProject', query);
-                    window.location.href = 'verification-progress.html';
+                    // 使用 URL 参数传递项目名称（更可靠）
+                    window.location.href = `verification-progress.html?project=${encodeURIComponent(query)}`;
                 }
             }
         });
@@ -1626,12 +1626,13 @@
             const website = document.getElementById('inputWebsite').value.trim();
             const contract = document.getElementById('inputContract').value.trim();
 
-            // 保存所有输入信息
+            // 保存所有输入信息到 sessionStorage（用于新项目数据）
             const projectData = { name: searchInput.value.trim(), twitter, website, contract };
             sessionStorage.setItem('newProjectData', JSON.stringify(projectData));
-            sessionStorage.setItem('verifyProject', searchInput.value.trim() || 'New Project');
 
-            window.location.href = 'verification-progress.html';
+            // 使用 URL 参数传递项目名称（更可靠）
+            const projectName = searchInput.value.trim() || 'New Project';
+            window.location.href = `verification-progress.html?project=${encodeURIComponent(projectName)}`;
         });
 
         // 示例标签点击
