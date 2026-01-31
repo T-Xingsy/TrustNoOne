@@ -6,7 +6,7 @@
     <title>Azuki - 画饼指数 78 | 画饼粉碎机</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
     <style>
         /* 继承基础样式 */
         :root {
@@ -31,6 +31,7 @@
             --font-display: 'Orbitron', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            --font-chinese-display: 'ZCOOL XiaoWei', 'Noto Sans SC', serif;
             --space-xs: 4px;
             --space-sm: 8px;
             --space-md: 16px;
@@ -71,10 +72,10 @@
         }
 
         .logo-cn {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
-            font-weight: 900;
-            letter-spacing: 0.1em;
+            font-family: var(--font-chinese-display);
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
             color: var(--color-brand-orange);
             text-shadow: 0 0 10px var(--color-brand-orange-glow);
             text-transform: uppercase;
@@ -196,13 +197,29 @@
             padding: var(--space-sm) var(--space-md);
             background: var(--color-danger);
             color: var(--color-bg);
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             margin-bottom: var(--space-md);
             animation: pulse-border 2s ease-in-out infinite;
             font-family: var(--font-chinese);
+        }
+
+        /* 风险徽章颜色变体 */
+        .project-badge.badge-high {
+            background: var(--color-danger);
+            color: var(--color-bg);
+        }
+
+        .project-badge.badge-medium {
+            background: var(--color-warning);
+            color: #1a1a1a;
+        }
+
+        .project-badge.badge-low {
+            background: var(--color-success);
+            color: #1a1a1a;
         }
 
         @keyframes pulse-border {
@@ -276,9 +293,10 @@
         }
 
         .score-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
+            font-family: var(--font-chinese-display);
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
             color: var(--color-text-secondary);
             margin-bottom: var(--space-sm);
         }
@@ -293,7 +311,7 @@
         }
 
         .score-status {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--color-bg);
             background: var(--color-danger);
             padding: var(--space-xs) var(--space-md);
@@ -301,6 +319,8 @@
             margin-top: var(--space-sm);
             font-weight: 700;
             display: inline-block;
+            font-family: var(--font-chinese);
+            letter-spacing: 0.1em;
         }
 
         /* ========================================
@@ -396,11 +416,11 @@
         }
 
         .section-title {
-            font-family: var(--font-display);
+            font-family: var(--font-chinese);
             font-size: 1rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             margin-bottom: var(--space-lg);
             display: flex;
             align-items: center;
@@ -450,15 +470,18 @@
         }
 
         .dimension-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--color-text-primary);
             font-family: var(--font-chinese);
+            letter-spacing: 0.1em;
         }
 
         .dimension-weight {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: var(--color-text-tertiary);
+            font-family: var(--font-chinese);
+            letter-spacing: 0.05em;
         }
 
         .dimension-score-inline {
@@ -499,8 +522,10 @@
         .dimension-bar-fill-inline.high { background: var(--color-success); }
 
         .dimension-explanation {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--color-text-tertiary);
+            font-family: var(--font-chinese);
+            line-height: 1.5;
         }
 
         .dimensions-grid {
@@ -675,9 +700,11 @@
         }
 
         .promise-text {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-bottom: var(--space-xs);
             font-family: var(--font-chinese);
+            font-weight: 500;
+            line-height: 1.6;
         }
 
         .promise-meta {
@@ -766,6 +793,8 @@
             font-weight: 700;
             color: var(--color-info);
             margin-bottom: var(--space-xs);
+            font-family: var(--font-chinese);
+            letter-spacing: 0.05em;
         }
 
         /* ========================================
@@ -1154,7 +1183,7 @@
                             <div class="dimension-bar-inline">
                                 <div class="dimension-bar-fill-inline high" style="width: 72%;"></div>
                             </div>
-                            <div class="dimension-explanation">国库资金相对稳定，当前余额127 ETH</div>
+                            <div class="dimension-explanation">国库资金保持稳定，当前储备720 ETH</div>
                         </div>
                     </div>
 
@@ -1240,7 +1269,7 @@
                             </div>
                             <div class="promise-evidence">
                                 <div class="promise-evidence-title">链上验证结果:</div>
-                                国库地址当前余额: 127 ETH。历史记录显示在 2023-08 有大额转出事件，未达到承诺的 500 ETH 锁定量。
+                                国库地址当前余额: 720 ETH。历史记录显示在 2023-08 有大额转出事件，未达到承诺的 5000 ETH 锁定量。
                             </div>
                         </div>
                     </div>
@@ -1581,7 +1610,7 @@
             if (scoreEl) scoreEl.textContent = project.score;
 
             const riskLevel = project.risk;
-            let statusText = '可信';
+            let statusText = '低风险';
             let badgeText = '✓ 低画饼风险';
             let colorVar = '--color-success';
 
@@ -1591,7 +1620,7 @@
                 colorVar = '--color-danger';
             } else if (riskLevel === 'medium') {
                 statusText = '中度画饼';
-                badgeText = '⚡ 中画饼风险';
+                badgeText = '▶ 中画饼风险';
                 colorVar = '--color-warning';
             }
 
@@ -1602,7 +1631,14 @@
 
             if (badgeEl) {
                 badgeEl.textContent = badgeText;
-                badgeEl.style.background = `var(${colorVar})`;
+                badgeEl.className = 'project-badge';
+                if (riskLevel === 'high') {
+                    badgeEl.classList.add('badge-high');
+                } else if (riskLevel === 'medium') {
+                    badgeEl.classList.add('badge-medium');
+                } else {
+                    badgeEl.classList.add('badge-low');
+                }
             }
 
             if (scoreEl) {
@@ -1623,7 +1659,7 @@
                 riskLevel === 'high' ? 'GitHub活跃度下降，近6个月平均月提交8次' : 'GitHub活跃度一般，近6个月平均月提交15次');
 
             updateDimensionRow('dimension-finance', Math.round(dimensions.finance),
-                `国库资金${riskLevel === 'high' ? '波动较大' : '相对稳定'}，当前余额${Math.round(dimensions.finance / 2)} ETH`);
+                `国库资金${riskLevel === 'high' ? '大幅流出' : '保持稳定'}，当前储备${Math.round(dimensions.finance * 10)} ETH`);
 
             updateDimensionRow('dimension-momentum', Math.round(dimensions.momentum),
                 `Twitter活跃度${riskLevel === 'high' ? '较低' : '一般'}，周均推文约${Math.round(dimensions.momentum / 5)}条`);
@@ -1706,7 +1742,7 @@
 
         function shareOnTwitter() {
             const score = document.querySelector('.score-value').textContent;
-            const text = `🔍 ${projectName} 的画饼指数: ${score}！通过画饼粉碎机查看NFT项目可信度评估报告`;
+            const text = `🔍 ${projectName} 的画饼指数: ${score}！通过画饼粉碎机查看NFT项目评估报告`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
             window.open(url, '_blank');
         }

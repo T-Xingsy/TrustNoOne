@@ -6,7 +6,7 @@
     <title>画饼粉碎机 | NFT 项目可信度评估</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
     <style>
         /* ========================================
            DESIGN SYSTEM - 画饼粉碎机
@@ -44,6 +44,7 @@
             --font-display: 'Orbitron', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            --font-chinese-display: 'ZCOOL XiaoWei', 'Noto Sans SC', serif;
 
             /* 间距 */
             --space-xs: 4px;
@@ -378,11 +379,34 @@
         }
 
         .hero-subtitle {
-            font-size: 0.9rem;
+            font-family: var(--font-chinese);
+            font-size: 0.95rem;
             color: var(--color-text-secondary);
             max-width: 600px;
             margin: 0 auto var(--space-2xl);
-            line-height: 1.6;
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle-line {
+            display: block;
+            opacity: 0;
+            animation: fade-in-up 0.6s ease-out forwards;
+        }
+
+        .subtitle-line:nth-child(1) { animation-delay: 0.4s; }
+        .subtitle-line:nth-child(2) { animation-delay: 0.5s; }
+        .subtitle-line:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ========================================
@@ -817,27 +841,40 @@
             display: flex;
             flex-direction: column;
             gap: var(--space-xs);
+            min-height: 38px;
+            justify-content: flex-start;
+            flex-shrink: 0;
         }
+
+        .stat:nth-child(1) { width: 100px; }
+        .stat:nth-child(2) { width: 70px; }
+        .stat:nth-child(3) { width: 85px; }
 
         .stat-label {
             color: var(--color-text-tertiary);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
+            font-family: var(--font-chinese);
+            letter-spacing: 0.1em;
         }
 
         .stat-value {
             font-weight: 700;
+            line-height: 1.4;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: var(--space-xs);
-            padding: var(--space-xs) var(--space-sm);
-            background: var(--color-bg-tertiary);
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
+            font-family: var(--font-chinese);
+            line-height: 1.4;
+            font-weight: 700;
         }
 
         .status-dot {
@@ -861,8 +898,8 @@
         }
 
         @keyframes pulse-dot {
-            0%, 100% { opacity: 1; box-shadow: 0 0 5px currentColor; }
-            50% { opacity: 0.5; box-shadow: 0 0 10px currentColor; }
+            0%, 100% { background: var(--color-danger); }
+            50% { background: var(--color-bg); }
         }
 
         /* ========================================
@@ -1100,8 +1137,9 @@
                 <span class="hero-title-line">用数据说话</span>
             </h1>
             <p class="hero-subtitle">
-                AI 驱动的 NFT 项目可信度评估系统。通过链上数据验证项目方承诺，
-                计算画饼指数（0-100），让你一眼识破"画饼大师"。
+                <span class="subtitle-line">AI 驱动的 NFT 项目可信度评估系统</span>
+                <span class="subtitle-line">通过链上数据验证项目方承诺</span>
+                <span class="subtitle-line">计算画饼指数（0-100），让你一眼识破"画饼大师"</span>
             </p>
         </section>
 
@@ -1307,9 +1345,9 @@
             return riskMap[risk] || '未知';
         }
 
-        // 获取状态文本（低风险显示为"可信"）
+        // 获取状态文本
         function getStatusText(risk) {
-            return risk === 'low' ? '可信' : getRiskText(risk);
+            return getRiskText(risk);
         }
 
         // 创建项目卡片 HTML
