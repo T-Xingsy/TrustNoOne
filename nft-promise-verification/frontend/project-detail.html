@@ -1593,7 +1593,10 @@
                 statusEl.style.background = `var(${colorVar})`;
             }
 
-            if (badgeEl) badgeText.textContent = badgeText;
+            if (badgeEl) {
+                badgeEl.textContent = badgeText;
+                badgeEl.style.background = `var(${colorVar})`;
+            }
 
             if (scoreEl) {
                 scoreEl.style.color = `var(${colorVar})`;
