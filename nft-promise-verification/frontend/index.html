@@ -952,6 +952,18 @@
            CONTRACT ADDRESS TOOLTIP
            ======================================== */
 
+        .website-link {
+            color: var(--color-info);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .website-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
         .contract-link {
             position: relative;
             display: inline-flex;
@@ -1259,17 +1271,23 @@
 
         // localStorage 键名
         const STORAGE_KEY = 'nft_projects_db';
+        const STORAGE_VERSION = 'v2'; // 版本号，数据结构变更时更新
         const VERIFIED_KEY = 'nft_verified_projects';
 
         // 初始化项目数据库
         function initProjectsDatabase() {
             // 从 localStorage 读取已验证的项目
-            const storedProjects = localStorage.getItem(STORAGE_KEY);
-            if (storedProjects) {
-                return JSON.parse(storedProjects);
+            const stored = localStorage.getItem(STORAGE_KEY);
+            const storedVersion = localStorage.getItem(STORAGE_KEY + '_version');
+
+            // 如果版本不匹配或没有数据，使用默认数据
+            if (stored && storedVersion === STORAGE_VERSION) {
+                return JSON.parse(stored);
             }
-            // 首次加载，使用默认数据
+
+            // 首次加载或版本更新，使用默认数据
             localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProjects));
+            localStorage.setItem(STORAGE_KEY + '_version', STORAGE_VERSION);
             return [...defaultProjects];
         }
 
@@ -1318,7 +1336,9 @@
                 <div class="project-header">
                     <div>
                         <h3 class="project-name">${project.name}</h3>
-                        <p class="project-meta">${project.twitter} · 合约
+                        <p class="project-meta">${project.twitter} · 官网
+                            <a href="https://${project.website}" target="_blank" class="website-link">${project.website || '暂无'}</a>
+                            · 合约
                             <span class="contract-link" data-contract="${project.contract}">
                                 <span class="contract-address">${project.contractShort}</span>
                                 <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

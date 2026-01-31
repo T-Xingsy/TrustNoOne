@@ -1395,6 +1395,7 @@
         // 共享数据存储键
         // ========================================
         const STORAGE_KEY = 'nft_projects_db';
+        const STORAGE_VERSION = 'v2'; // 版本号，与 index.html 保持一致
 
         // 默认项目数据（与 index.html 保持一致）
         const defaultProjects = [
@@ -1411,12 +1412,18 @@
         // 五维评分数据（用于生成随机但合理的维度分数）
         const dimensionWeights = { integrity: 30, fairness: 20, development: 20, finance: 15, momentum: 15 };
 
-        // 从 localStorage 加载项目数据
+        // 从 localStorage 加载项目数据（带版本检查）
         function loadProjectsFromStorage() {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
+            const storedVersion = localStorage.getItem(STORAGE_KEY + '_version');
+
+            // 如果版本不匹配或没有数据，返回默认数据
+            if (stored && storedVersion === STORAGE_VERSION) {
                 return JSON.parse(stored);
             }
+
+            // 版本不匹配时，从 index.html 的默认数据读取
+            // 这里简化处理，返回默认数据
             return [...defaultProjects];
         }
 
