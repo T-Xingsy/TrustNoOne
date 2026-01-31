@@ -988,31 +988,31 @@
         <!-- PROJECT HEADER -->
         <header class="project-header">
             <div class="project-info">
-                <span class="project-badge">⚠ 高画饼风险</span>
-                <h1 class="project-name">Azuki</h1>
+                <span class="project-badge" id="projectBadge">⚠ 高画饼风险</span>
+                <h1 class="project-name" id="detailProjectName">Azuki</h1>
                 <div class="project-meta">
                     <div class="meta-item">
                         <span class="meta-label">Twitter:</span>
-                        <span class="meta-value"><a href="#">@AzukiEN</a></span>
+                        <span class="meta-value"><a href="#" id="detailTwitter">@AzukiEN</a></span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">官网:</span>
-                        <span class="meta-value"><a href="#">azuki.com</a></span>
+                        <span class="meta-value"><a href="#" id="detailWebsite">azuki.com</a></span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">合约:</span>
-                        <span class="meta-value">0xed5af38865...d4b4</span>
+                        <span class="meta-value" id="detailContract">0xed5af38865...d4b4</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">最后验证:</span>
-                        <span class="meta-value">2025-01-30</span>
+                        <span class="meta-value" id="detailVerifiedDate">2025-01-30</span>
                     </div>
                 </div>
             </div>
             <div class="score-display">
                 <div class="score-label">画饼指数</div>
-                <div class="score-value">78</div>
-                <div class="score-status">严重画饼</div>
+                <div class="score-value" id="detailScore">78</div>
+                <div class="score-status" id="detailScoreStatus">严重画饼</div>
             </div>
         </header>
 
@@ -1050,7 +1050,7 @@
                             <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
                             <!-- 数据点坐标 = 中心 + 半径*(score/100) * (cos(角度), sin(角度)) -->
                             <g class="radar-data">
-                                <polygon class="radar-polygon"
+                                <polygon class="radar-polygon" id="radarPolygon"
                                     points="150,112 237,125 177,219 105,201 87,126"
                                     fill="rgba(204, 51, 51, 0.25)"
                                     stroke="var(--color-danger)"
@@ -1093,9 +1093,9 @@
                 </div>
 
                 <!-- 右侧参数说明 -->
-                <div class="dimensions-list">
+                <div class="dimensions-list" id="dimensionsList">
                     <!-- 诚信 -->
-                    <div class="dimension-row low">
+                    <div class="dimension-row low" id="dimension-integrity" data-score="32" data-label="诚信">
                         <div>
                             <div class="dimension-label">诚信</div>
                             <div class="dimension-weight">权重 30%</div>
@@ -1110,7 +1110,7 @@
                     </div>
 
                     <!-- 公平性 -->
-                    <div class="dimension-row medium">
+                    <div class="dimension-row medium" id="dimension-fairness" data-score="55" data-label="公平性">
                         <div>
                             <div class="dimension-label">公平性</div>
                             <div class="dimension-weight">权重 20%</div>
@@ -1125,7 +1125,7 @@
                     </div>
 
                     <!-- 开发力 -->
-                    <div class="dimension-row low">
+                    <div class="dimension-row low" id="dimension-development" data-score="41" data-label="开发力">
                         <div>
                             <div class="dimension-label">开发力</div>
                             <div class="dimension-weight">权重 20%</div>
@@ -1140,7 +1140,7 @@
                     </div>
 
                     <!-- 财务 -->
-                    <div class="dimension-row high">
+                    <div class="dimension-row high" id="dimension-finance" data-score="72" data-label="财务">
                         <div>
                             <div class="dimension-label">财务</div>
                             <div class="dimension-weight">权重 15%</div>
@@ -1155,7 +1155,7 @@
                     </div>
 
                     <!-- 动能 -->
-                    <div class="dimension-row medium">
+                    <div class="dimension-row medium" id="dimension-momentum" data-score="58" data-label="动能">
                         <div>
                             <div class="dimension-label">动能</div>
                             <div class="dimension-weight">权重 15%</div>
@@ -1387,6 +1387,234 @@
     </div>
 
     <script>
+        // ========================================
+        // 共享数据存储键
+        // ========================================
+        const STORAGE_KEY = 'nft_projects_db';
+
+        // 默认项目数据（与 index.html 保持一致）
+        const defaultProjects = [
+            { name: 'Azuki', twitter: '@AzukiEN', contract: '0xed5af38865e05c81cb826c3742787055585c19f2', contractShort: '0xed5af...', score: 78, risk: 'high', integrity: 32, promises: { total: 15, unfulfilled: 12 }, website: 'azuki.com', verified: true },
+            { name: 'Moonbirds', twitter: '@moonbirds', contract: '0x2358170f3432838c8ee81a2968278f93d1246d2d', contractShort: '0x2358...', score: 54, risk: 'medium', integrity: 58, promises: { total: 10, unfulfilled: 7 }, website: 'moonbirds.com', verified: true },
+            { name: 'Pudgy Penguins', twitter: '@PudgyPenguins', contract: '0xbd352549cfc118e93253d31a28f8ef6cbaac4b4c', contractShort: '0xbd35...', score: 23, risk: 'low', integrity: 82, promises: { total: 9, unfulfilled: 2 }, website: 'pudgypenguins.com', verified: true },
+            { name: 'CloneX', twitter: '@clonex', contract: '0x49cf6f5d4e7d247dbc89d084dde0bc32097822b', contractShort: '0x49cf...', score: 71, risk: 'high', integrity: 41, promises: { total: 13, unfulfilled: 9 }, website: 'clonex.com', verified: true },
+            { name: 'Bored Ape Yacht Club', twitter: '@BoredApeYC', contract: '0xBC4CA0EdA7647A8aB7C2061d2E118A41671F8968', contractShort: '0xBC4CA0...', score: 35, risk: 'medium', integrity: 68, promises: { total: 11, unfulfilled: 4 }, website: 'boredapeyachtclub.com', verified: true },
+            { name: 'Doodles', twitter: '@Doodles', contract: '0x8a90cab2b38ba80864c5bdd04a23216b856087f7', contractShort: '0x8a90...', score: 42, risk: 'medium', integrity: 61, promises: { total: 8, unfulfilled: 3 }, website: 'doodles.io', verified: true },
+            { name: 'DeGods', twitter: '@DeGodsNFT', contract: '0x24523eff95d8c59e1b181cf8ac192ed1b4690746', contractShort: '0x2452...', score: 28, risk: 'low', integrity: 75, promises: { total: 10, unfulfilled: 2 }, website: 'degods.com', verified: true },
+            { name: 'Azuki Elementals', twitter: '@AzukiEN', contract: '0x9b6f8e79a0e0ca6ca75dd103a3060738eb84e3c8', contractShort: '0x9b6f...', score: 82, risk: 'high', integrity: 28, promises: { total: 14, unfulfilled: 12 }, website: 'azuki.com', verified: true },
+            { name: 'Beanz', twitter: '@AzukiEN', contract: '0x3063a15824ec1a84c512f35406744ad5a827165c', contractShort: '0x3063...', score: 65, risk: 'medium', integrity: 48, promises: { total: 12, unfulfilled: 7 }, website: 'azuki.com', verified: true }
+        ];
+
+        // 五维评分数据（用于生成随机但合理的维度分数）
+        const dimensionWeights = { integrity: 30, fairness: 20, development: 20, finance: 15, momentum: 15 };
+
+        // 从 localStorage 加载项目数据
+        function loadProjectsFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            return [...defaultProjects];
+        }
+
+        // 计算雷达图坐标
+        function calculateRadarPoint(score, index, total = 5) {
+            const centerX = 150;
+            const centerY = 150;
+            const radius = 120;
+            const startAngle = -90 * Math.PI / 180; // 从12点钟方向开始
+            const angleStep = (2 * Math.PI) / total;
+            const angle = startAngle + index * angleStep;
+
+            const x = centerX + (radius * score / 100) * Math.cos(angle);
+            const y = centerY + (radius * score / 100) * Math.sin(angle);
+
+            return `${Math.round(x)},${Math.round(y)}`;
+        }
+
+        // 更新雷达图
+        function updateRadarChart(dimensions) {
+            const polygon = document.getElementById('radarPolygon');
+            if (!polygon || !dimensions) return;
+
+            // 维度顺序: 诚信(上), 公平性(右上), 财务(右下), 动能(左下), 开发力(左上)
+            const scores = [
+                dimensions.integrity || 50,
+                dimensions.fairness || 50,
+                dimensions.finance || 50,
+                dimensions.momentum || 50,
+                dimensions.development || 50
+            ];
+
+            const points = scores.map((score, index) => calculateRadarPoint(score, index)).join(' ');
+            polygon.setAttribute('points', points);
+
+            // 确定主要颜色（基于平均分）
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+            let colorVar = '--color-success';
+            if (avgScore < 50) colorVar = '--color-danger';
+            else if (avgScore < 70) colorVar = '--color-warning';
+
+            polygon.setAttribute('stroke', `var(${colorVar})`);
+            polygon.setAttribute('fill', `var(${colorVar})`);
+            polygon.style.fill = `var(${colorVar})`;
+            polygon.style.fillOpacity = '0.25';
+        }
+
+        // 更新维度行显示
+        function updateDimensionRow(rowId, score, explanation) {
+            const row = document.getElementById(rowId);
+            if (!row) return;
+
+            const level = score < 50 ? 'low' : score < 70 ? 'medium' : 'high';
+            const colorVar = level === 'low' ? 'danger' : level === 'medium' ? 'warning' : 'success';
+
+            // 更新类名
+            row.className = `dimension-row ${level}`;
+            row.setAttribute('data-score', score);
+
+            // 更新分数显示
+            const scoreEl = row.querySelector('.dimension-score-inline');
+            if (scoreEl) {
+                scoreEl.className = `dimension-score-inline ${level}`;
+                scoreEl.textContent = score;
+            }
+
+            // 更新进度条
+            const barFill = row.querySelector('.dimension-bar-fill-inline');
+            if (barFill) {
+                barFill.className = `dimension-bar-fill-inline ${level}`;
+                barFill.style.width = `${score}%`;
+            }
+
+            // 更新说明（如果提供）
+            if (explanation) {
+                const explanationEl = row.querySelector('.dimension-explanation');
+                if (explanationEl) {
+                    explanationEl.textContent = explanation;
+                }
+            }
+        }
+
+        // 根据项目数据生成维度分数
+        function generateDimensions(project) {
+            const baseScore = 100 - project.score; // 分数越高，维度越低
+            return {
+                integrity: project.integrity || Math.max(20, Math.min(100, baseScore + Math.random() * 20 - 10)),
+                fairness: Math.max(30, Math.min(100, baseScore + Math.random() * 30 - 15)),
+                development: Math.max(30, Math.min(100, baseScore + Math.random() * 30 - 15)),
+                finance: Math.max(40, Math.min(100, baseScore + Math.random() * 40 - 20)),
+                momentum: Math.max(30, Math.min(100, baseScore + Math.random() * 30 - 15))
+            };
+        }
+
+        // 主函数：更新页面数据
+        function updatePageWithProjectData(projectName) {
+            const projects = loadProjectsFromStorage();
+            const project = projects.find(p => p.name.toLowerCase() === projectName.toLowerCase());
+
+            if (!project) {
+                console.warn('项目未找到:', projectName);
+                return;
+            }
+
+            // 更新基本信息
+            document.getElementById('detailProjectName').textContent = project.name;
+
+            const twitterEl = document.getElementById('detailTwitter');
+            if (twitterEl) {
+                twitterEl.textContent = project.twitter || '@unknown';
+                twitterEl.href = `https://twitter.com/${project.twitter?.replace('@', '') || ''}`;
+            }
+
+            const websiteEl = document.getElementById('detailWebsite');
+            if (websiteEl) {
+                websiteEl.textContent = project.website || '暂无';
+                websiteEl.href = project.website ? `https://${project.website}` : '#';
+            }
+
+            const contractEl = document.getElementById('detailContract');
+            if (contractEl) {
+                contractEl.textContent = project.contractShort || project.contract?.substring(0, 8) + '...' || '未知';
+            }
+
+            // 更新分数
+            const scoreEl = document.getElementById('detailScore');
+            const statusEl = document.getElementById('detailScoreStatus');
+            const badgeEl = document.getElementById('projectBadge');
+
+            if (scoreEl) scoreEl.textContent = project.score;
+
+            const riskLevel = project.risk;
+            let statusText = '可信';
+            let badgeText = '✓ 低画饼风险';
+            let colorVar = '--color-success';
+
+            if (riskLevel === 'high') {
+                statusText = '严重画饼';
+                badgeText = '⚠ 高画饼风险';
+                colorVar = '--color-danger';
+            } else if (riskLevel === 'medium') {
+                statusText = '中度画饼';
+                badgeText = '⚡ 中画饼风险';
+                colorVar = '--color-warning';
+            }
+
+            if (statusEl) {
+                statusEl.textContent = statusText;
+                statusEl.style.background = `var(${colorVar})`;
+            }
+
+            if (badgeEl) badgeText.textContent = badgeText;
+
+            if (scoreEl) {
+                scoreEl.style.color = `var(${colorVar})`;
+            }
+
+            // 生成并更新维度数据
+            const dimensions = generateDimensions(project);
+
+            // 更新五维审计行
+            updateDimensionRow('dimension-integrity', Math.round(dimensions.integrity),
+                `${Math.round(project.promises?.total * 0.7 || 10)}条承诺中仅${Math.round(project.promises?.total * 0.3 || 3)}条兑现，诚信得分偏低`);
+
+            updateDimensionRow('dimension-fairness', Math.round(dimensions.fairness),
+                `NFT分布${riskLevel === 'high' ? '高度' : riskLevel === 'medium' ? '中度' : '相对'}集中，Top 10持有约${Math.round(dimensions.fairness / 3)}%`);
+
+            updateDimensionRow('dimension-development', Math.round(dimensions.development),
+                riskLevel === 'high' ? 'GitHub活跃度下降，近6个月平均月提交8次' : 'GitHub活跃度一般，近6个月平均月提交15次');
+
+            updateDimensionRow('dimension-finance', Math.round(dimensions.finance),
+                `国库资金${riskLevel === 'high' ? '波动较大' : '相对稳定'}，当前余额${Math.round(dimensions.finance / 2)} ETH`);
+
+            updateDimensionRow('dimension-momentum', Math.round(dimensions.momentum),
+                `Twitter活跃度${riskLevel === 'high' ? '较低' : '一般'}，周均推文约${Math.round(dimensions.momentum / 5)}条`);
+
+            // 更新雷达图
+            updateRadarChart(dimensions);
+
+            // 更新验证日期
+            const dateEl = document.getElementById('detailVerifiedDate');
+            if (dateEl) {
+                const today = new Date();
+                dateEl.textContent = today.toISOString().split('T')[0];
+            }
+
+            // 更新筛选按钮计数
+            const fulfilledCount = project.promises?.total - project.promises?.unfulfilled || 3;
+            const totalCount = project.promises?.total || 15;
+            const unfulfilledCount = project.promises?.unfulfilled || 10;
+            const unverifiableCount = Math.max(0, totalCount - fulfilledCount - unfulfilledCount);
+
+            const filterBtns = document.querySelectorAll('.filter-button');
+            if (filterBtns.length >= 4) {
+                filterBtns[0].textContent = `全部 (${totalCount})`;
+                filterBtns[1].textContent = `✅ 已兑现 (${fulfilledCount})`;
+                filterBtns[2].textContent = `❌ 未兑现 (${unfulfilledCount})`;
+                filterBtns[3].textContent = `❓ 无法验证 (${unverifiableCount})`;
+            }
+        }
+
         // 获取要查看的项目名
         const projectName = sessionStorage.getItem('viewProject') || 'Azuki';
 
@@ -1445,11 +1673,14 @@
             window.open(url, '_blank');
         }
 
-        // 动画进度条
+        // 进度条动画
         setTimeout(() => {
-            document.querySelectorAll('.dimension-card').forEach(card => {
-                const percent = card.style.getPropertyValue('--score-percent');
-                card.style.setProperty('--score-percent', percent);
+            document.querySelectorAll('.dimension-bar-fill-inline').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 50);
             });
         }, 100);
     </script>
