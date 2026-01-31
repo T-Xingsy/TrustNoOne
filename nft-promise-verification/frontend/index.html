@@ -1390,8 +1390,8 @@
             // 清空现有内容
             grid.innerHTML = '';
 
-            // 渲染所有已验证的项目（最多显示前8个）
-            const projectsToRender = projectsDatabase.filter(p => p.verified).slice(0, 8);
+            // 渲染所有已验证的项目
+            const projectsToRender = projectsDatabase.filter(p => p.verified);
             projectsToRender.forEach(project => {
                 grid.appendChild(createProjectCard(project));
             });
