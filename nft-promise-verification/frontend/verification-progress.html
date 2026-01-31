@@ -523,8 +523,8 @@
                 </div>
 
                 <div class="score-label">画饼指数</div>
-                <div class="score-reveal" style="color: var(--color-danger);">78</div>
-                <div class="score-status">严重画饼</div>
+                <div class="score-reveal" id="finalScore" style="color: var(--color-danger);">78</div>
+                <div class="score-status" id="finalStatus">严重画饼</div>
 
                 <button class="view-details-button" onclick="viewDetails()">查看详细报告</button>
             </div>
@@ -535,6 +535,9 @@
         // 模拟验证流程
         let currentStep = 0;
         let progress = 0;
+        let finalScore = 78;
+        let finalRisk = 'high';
+        let finalStatus = '严重画饼';
 
         const steps = [
             {
@@ -643,10 +646,27 @@
                     }
                 } else {
                     clearInterval(interval);
+                    // 生成最终分数
+                    finalScore = Math.floor(Math.random() * 70) + 15; // 15-85
+                    finalRisk = finalScore >= 60 ? 'high' : finalScore >= 40 ? 'medium' : 'low';
+                    finalStatus = finalRisk === 'high' ? '严重画饼' : finalRisk === 'medium' ? '中度画饼' : '可信';
+
                     // 显示完成状态
                     setTimeout(() => {
                         document.getElementById('verifyingState').classList.add('hide');
                         document.getElementById('completeState').classList.add('show');
+
+                        // 更新分数显示
+                        const scoreEl = document.getElementById('finalScore');
+                        const statusEl = document.getElementById('finalStatus');
+
+                        scoreEl.textContent = finalScore;
+                        statusEl.textContent = finalStatus;
+
+                        // 更新颜色
+                        const colorVar = finalRisk === 'high' ? '--color-danger' : finalRisk === 'medium' ? '--color-warning' : '--color-success';
+                        scoreEl.style.color = `var(${colorVar})`;
+                        statusEl.style.background = `var(${colorVar})`;
                     }, 500);
                 }
             }, 200);
@@ -659,8 +679,44 @@
         }
 
         function viewDetails() {
-            const project = sessionStorage.getItem('verifyProject') || 'Azuki';
-            sessionStorage.setItem('viewProject', project);
+            const projectName = sessionStorage.getItem('verifyProject') || 'Azuki';
+
+            // 获取新项目数据
+            const newProjectDataStr = sessionStorage.getItem('newProjectData');
+
+            // 如果是新项目，保存验证结果到 sessionStorage
+            if (newProjectDataStr) {
+                try {
+                    const newProjectData = JSON.parse(newProjectDataStr);
+                    const finalIntegrity = Math.max(0, Math.min(100, 100 - finalScore + Math.floor(Math.random() * 20) - 10));
+
+                    // 构建完整的项目数据
+                    const verifiedProject = {
+                        name: newProjectData.name || projectName,
+                        twitter: newProjectData.twitter || '@unknown',
+                        website: newProjectData.website || '',
+                        contract: newProjectData.contract || '0x0000000000000000000000000000000000000000',
+                        contractShort: newProjectData.contract ? newProjectData.contract.substring(0, 6) + '...' : '0x0000...',
+                        score: finalScore,
+                        risk: finalRisk,
+                        integrity: finalIntegrity,
+                        promises: {
+                            total: Math.floor(Math.random() * 10) + 5,
+                            unfulfilled: Math.floor(Math.random() * 8) + 1
+                        },
+                        verified: true
+                    };
+
+                    // 保存到 sessionStorage 供 index.html 读取
+                    sessionStorage.setItem('newVerifiedProject', JSON.stringify(verifiedProject));
+                    // 清除临时数据
+                    sessionStorage.removeItem('newProjectData');
+                } catch (e) {
+                    console.error('解析新项目数据失败:', e);
+                }
+            }
+
+            sessionStorage.setItem('viewProject', projectName);
             window.location.href = 'project-detail.html';
         }
 
