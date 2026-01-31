@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证进度 | 画饼粉碎机</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0a0a;
+            --color-bg-secondary: #111111;
+            --color-bg-tertiary: #1a1a1a;
+            --color-border: #333333;
+            --color-border-glow: #444444;
+            --color-danger: #ff2d2d;
+            --color-danger-glow: rgba(255, 45, 45, 0.3);
+            --color-warning: #ffaa00;
+            --color-warning-glow: rgba(255, 170, 0, 0.3);
+            --color-success: #00ff88;
+            --color-success-glow: rgba(0, 255, 136, 0.3);
+            --color-info: #00d4ff;
+            --color-info-glow: rgba(0, 212, 255, 0.3);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #888888;
+            --color-text-tertiary: #555555;
+            --font-display: 'Orbitron', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Focus visible for accessibility */
+        :focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* 背景动画 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(var(--color-border-glow) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-border-glow) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            width: 100%;
+            padding: var(--space-lg);
+        }
+
+        /* ========================================
+           VERIFICATION CONTAINER
+           ======================================== */
+
+        .verification-container {
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-border);
+            padding: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 扫描线效果 */
+        .verification-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-info), transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* ========================================
+           HEADER
+           ======================================== */
+
+        .verification-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .verification-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .verification-subtitle {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+        }
+
+        .project-name {
+            color: var(--color-info);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           PROGRESS BAR
+           ======================================== */
+
+        .progress-container {
+            margin-bottom: var(--space-xl);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-info), var(--color-success));
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-sm);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .progress-percent {
+            color: var(--color-info);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           STEPS
+           ======================================== */
+
+        .steps-container {
+            margin-bottom: var(--space-xl);
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.completed {
+            opacity: 1;
+        }
+
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.8rem;
+            position: relative;
+        }
+
+        .step.active .step-icon {
+            border-color: var(--color-info);
+            box-shadow: 0 0 15px var(--color-info-glow);
+            animation: pulse-icon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { box-shadow: 0 0 5px var(--color-info-glow); }
+            50% { box-shadow: 0 0 20px var(--color-info-glow); }
+        }
+
+        .step.completed .step-icon {
+            background: var(--color-success);
+            border-color: var(--color-success);
+            color: var(--color-bg);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .step.active .step-title {
+            color: var(--color-info);
+        }
+
+        .step.completed .step-title {
+            color: var(--color-success);
+        }
+
+        .step-desc {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .step-detail {
+            font-size: 0.7rem;
+            color: var(--color-info);
+            margin-top: var(--space-xs);
+            font-family: var(--font-mono);
+        }
+
+        /* ========================================
+           AI THINKING
+           ======================================== */
+
+        .ai-thinking {
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-md);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-thinking::before {
+            content: 'AI';
+            position: absolute;
+            top: var(--space-xs);
+            right: var(--space-xs);
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            color: var(--color-info);
+            opacity: 0.5;
+        }
+
+        .thinking-line {
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .thinking-line::before {
+            content: '>';
+            color: var(--color-info);
+        }
+
+        .thinking-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--color-info);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* ========================================
+           CANCEL BUTTON
+           ======================================== */
+
+        .cancel-button {
+            width: 100%;
+            padding: var(--space-md);
+            background: transparent;
+            border: var(--border-thin) solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: var(--space-lg);
+            min-height: 48px;
+        }
+
+        .cancel-button:hover,
+        .cancel-button:focus {
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+            outline: none;
+        }
+
+        .cancel-button:focus {
+            outline: 2px solid var(--color-danger);
+            outline-offset: 2px;
+        }
+
+        /* ========================================
+           COMPLETE STATE
+           ======================================== */
+
+        .complete-state {
+            display: none;
+            text-align: center;
+        }
+
+        .complete-state.show {
+            display: block;
+        }
+
+        .score-reveal {
+            font-family: var(--font-display);
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            margin: var(--space-lg) 0;
+            animation: score-pop 0.5s ease-out;
+        }
+
+        @keyframes score-pop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .score-status {
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--color-danger);
+            color: var(--color-bg);
+            display: inline-block;
+        }
+
+        .view-details-button {
+            margin-top: var(--space-xl);
+            padding: var(--space-md) var(--space-xl);
+            background: var(--color-info);
+            border: none;
+            color: var(--color-bg);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        .view-details-button:hover,
+        .view-details-button:focus {
+            box-shadow: 0 0 20px var(--color-info-glow);
+            outline: none;
+        }
+
+        .view-details-button:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        /* 隐藏验证中状态 */
+        .verifying-state.hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="verification-container">
+            <!-- 验证中状态 -->
+            <div class="verifying-state" id="verifyingState">
+                <div class="verification-header">
+                    <h1 class="verification-title">正在验证项目</h1>
+                    <p class="verification-subtitle">项目: <span class="project-name">Azuki</span></p>
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressStatus">初始化...</span>
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                    </div>
+                </div>
+
+                <!-- 步骤 -->
+                <div class="steps-container">
+                    <div class="step" id="step1">
+                        <div class="step-icon">1</div>
+                        <div class="step-content">
+                            <div class="step-title">收集承诺</div>
+                            <div class="step-desc">从 Twitter、官网抓取项目公开承诺</div>
+                            <div class="step-detail" id="step1Detail"></div>
+                        </div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-icon">2</div>
+                        <div class="step-content">
+                            <div class="step-title">链上验证</div>
+                            <div class="step-desc">查询区块链数据验证承诺兑现情况</div>
+                            <div class="step-detail" id="step2Detail"></div>
+                        </div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-icon">3</div>
+                        <div class="step-content">
+                            <div class="step-title">五维评分</div>
+                            <div class="step-desc">计算诚信、公平性、开发力等维度得分</div>
+                            <div class="step-detail" id="step3Detail"></div>
+                        </div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-icon">4</div>
+                        <div class="step-content">
+                            <div class="step-title">生成报告</div>
+                            <div class="step-desc">汇总数据生成画饼指数报告</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI 思考过程 -->
+                <div class="ai-thinking">
+                    <div class="thinking-line" id="thinking1">正在连接 Twitter API...</div>
+                    <div class="thinking-line" id="thinking2"></div>
+                    <div class="thinking-line" id="thinking3"></div>
+                    <span class="thinking-cursor"></span>
+                </div>
+
+                <button class="cancel-button" onclick="cancelVerification()">取消验证</button>
+            </div>
+
+            <!-- 完成状态 -->
+            <div class="complete-state" id="completeState">
+                <div class="verification-header">
+                    <h1 class="verification-title">验证完成</h1>
+                    <p class="verification-subtitle">项目: <span class="project-name">Azuki</span></p>
+                </div>
+
+                <div class="score-label">画饼指数</div>
+                <div class="score-reveal" style="color: var(--color-danger);">78</div>
+                <div class="score-status">严重画饼</div>
+
+                <button class="view-details-button" onclick="viewDetails()">查看详细报告</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟验证流程
+        let currentStep = 0;
+        let progress = 0;
+
+        const steps = [
+            {
+                id: 'step1',
+                title: '收集承诺',
+                details: ['正在抓取 @AzukiEN 的推文...', '找到 127 条推文', '正在分析官网内容...', '提取到 15 条承诺']
+            },
+            {
+                id: 'step2',
+                title: '链上验证',
+                details: ['正在查询合约事件...', '分析锁定事件...', '检查 NFT 转账记录...', '验证国库余额...']
+            },
+            {
+                id: 'step3',
+                title: '五维评分',
+                details: ['计算诚信得分...', '分析代币分布...', '检查 GitHub 活跃度...', '评估社区动能...']
+            },
+            {
+                id: 'step4',
+                title: '生成报告',
+                details: ['汇总验证结果...', '计算画饼指数...', '生成最终报告...']
+            }
+        ];
+
+        const thinkingMessages = [
+            '已找到 3 条空投相关承诺',
+            '检测到 500 ETH 锁定承诺，正在验证...',
+            '国库地址: 0x7E1F...3A2F，当前余额: 127 ETH',
+            'GitHub: azukiateam/azuki-earth',
+            'OpenSea地板价: 5.2 ETH',
+            '诚信得分: 32/100 (高风险)'
+        ];
+
+        function updateProgress() {
+            const fill = document.getElementById('progressFill');
+            const percent = document.getElementById('progressPercent');
+            const status = document.getElementById('progressStatus');
+
+            fill.style.width = progress + '%';
+            percent.textContent = progress + '%';
+
+            if (progress < 25) status.textContent = '收集承诺中...';
+            else if (progress < 50) status.textContent = '链上验证中...';
+            else if (progress < 75) status.textContent = '评分计算中...';
+            else if (progress < 100) status.textContent = '生成报告中...';
+            else status.textContent = '验证完成';
+        }
+
+        function activateStep(stepIndex) {
+            // 标记之前的步骤为完成
+            for (let i = 0; i < stepIndex; i++) {
+                document.getElementById(steps[i].id).classList.remove('active');
+                document.getElementById(steps[i].id).classList.add('completed');
+                const icon = document.querySelector(`#${steps[i].id} .step-icon`);
+                icon.textContent = '✓';
+            }
+
+            // 激活当前步骤
+            if (stepIndex < steps.length) {
+                const step = steps[stepIndex];
+                const element = document.getElementById(step.id);
+                element.classList.add('active');
+
+                // 逐步显示详情
+                let detailIndex = 0;
+                const showDetail = setInterval(() => {
+                    if (detailIndex < step.details.length && element.classList.contains('active')) {
+                        const detailEl = document.getElementById(step.id + 'Detail');
+                        detailEl.textContent = step.details[detailIndex];
+                        detailIndex++;
+                    } else {
+                        clearInterval(showDetail);
+                    }
+                }, 800);
+            }
+        }
+
+        function updateThinking() {
+            let msgIndex = 0;
+            const showThinking = setInterval(() => {
+                if (msgIndex < thinkingMessages.length) {
+                    const lineNum = (msgIndex % 3) + 1;
+                    document.getElementById('thinking' + lineNum).textContent = thinkingMessages[msgIndex];
+                    msgIndex++;
+                } else {
+                    clearInterval(showThinking);
+                }
+            }, 1500);
+        }
+
+        function startVerification() {
+            activateStep(0);
+            updateThinking();
+
+            const interval = setInterval(() => {
+                if (progress < 100) {
+                    progress += Math.random() * 3 + 1;
+                    if (progress > 100) progress = 100;
+                    updateProgress();
+
+                    // 更新步骤
+                    const newStep = Math.floor(progress / 25);
+                    if (newStep !== currentStep && newStep < steps.length) {
+                        currentStep = newStep;
+                        activateStep(currentStep);
+                    }
+                } else {
+                    clearInterval(interval);
+                    // 显示完成状态
+                    setTimeout(() => {
+                        document.getElementById('verifyingState').classList.add('hide');
+                        document.getElementById('completeState').classList.add('show');
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        function cancelVerification() {
+            if (confirm('确定要取消验证吗？')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function viewDetails() {
+            const project = sessionStorage.getItem('verifyProject') || 'Azuki';
+            sessionStorage.setItem('viewProject', project);
+            window.location.href = 'project-detail.html';
+        }
+
+        // 获取要验证的项目名
+        const projectName = sessionStorage.getItem('verifyProject') || 'Azuki';
+        document.querySelectorAll('.project-name').forEach(el => {
+            el.textContent = projectName;
+        });
+
+        // 开始验证
+        startVerification();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画饼粉碎机 | NFT 项目可信度评估</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           DESIGN SYSTEM - 画饼粉碎机
+           ======================================== */
+
+        :root {
+            /* 核心配色 - 警报系统风格 */
+            --color-bg: #0a0a0a;
+            --color-bg-secondary: #111111;
+            --color-bg-tertiary: #1a1a1a;
+            --color-border: #333333;
+            --color-border-glow: #444444;
+
+            /* 状态颜色 - 荧光系 */
+            --color-danger: #ff2d2d;
+            --color-danger-glow: rgba(255, 45, 45, 0.3);
+            --color-warning: #ffaa00;
+            --color-warning-glow: rgba(255, 170, 0, 0.3);
+            --color-success: #00ff88;
+            --color-success-glow: rgba(0, 255, 136, 0.3);
+            --color-info: #00d4ff;
+            --color-info-glow: rgba(0, 212, 255, 0.3);
+
+            /* 文字颜色 */
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #888888;
+            --color-text-tertiary: #555555;
+
+            /* 画饼指数渐变 */
+            --gradient-low: #00ff88;
+            --gradient-mid: #ffaa00;
+            --gradient-high: #ff2d2d;
+
+            /* 字体 */
+            --font-display: 'Orbitron', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+            /* 间距 */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+
+            /* 边框 */
+            --border-thin: 1px;
+            --border-medium: 2px;
+            --border-thick: 3px;
+        }
+
+        /* ========================================
+           BASE STYLES
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Focus visible for accessibility */
+        :focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ========================================
+           DEPTH BACKGROUND - 景深动效
+           ======================================== */
+
+        /* 鼠标视差容器 */
+        .depth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 远景层 - 大网格缓慢移动 */
+        .depth-layer-far {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(51, 51, 51, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(51, 51, 51, 0.3) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: grid-scroll-far 60s linear infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes grid-scroll-far {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(50px, 50px) rotate(0.5deg); }
+        }
+
+        /* 中景层 - 中等网格 */
+        .depth-layer-mid {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(68, 68, 68, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(68, 68, 68, 0.4) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: grid-scroll-mid 40s linear infinite;
+            filter: blur(0.5px);
+        }
+
+        @keyframes grid-scroll-mid {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-30px, 30px) rotate(-0.3deg); }
+        }
+
+        /* 近景层 - 细网格 */
+        .depth-layer-near {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.15) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: grid-scroll-near 25s linear infinite;
+        }
+
+        @keyframes grid-scroll-near {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(25px, -25px); }
+        }
+
+        /* 悬浮粒子层 */
+        .depth-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--color-info);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle-float linear infinite;
+        }
+
+        .particle.small {
+            width: 2px;
+            height: 2px;
+        }
+
+        .particle.medium {
+            width: 3px;
+            height: 3px;
+        }
+
+        .particle.large {
+            width: 4px;
+            height: 4px;
+        }
+
+        @keyframes particle-float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+
+        /* 光晕效果 */
+        .depth-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: transform 0.3s ease-out;
+            filter: blur(40px);
+        }
+
+        /* 扫描线效果 - 覆盖在最上层 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03) 0px,
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* 晕影效果 - 四角暗角 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* ========================================
+           LAYOUT
+           ======================================== */
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+
+        /* ========================================
+           HEADER
+           ======================================== */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg) 0;
+            border-bottom: var(--border-thick) solid var(--color-border);
+            margin-bottom: var(--space-3xl);
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.1;
+        }
+
+        .logo-en {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .logo-cn {
+            font-family: var(--font-chinese);
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #ff6600;
+            text-shadow: 0 0 15px rgba(255, 102, 0, 0.6);
+            text-transform: uppercase;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .stat-value {
+            color: var(--color-success);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           HERO SECTION
+           ======================================== */
+
+        .hero {
+            text-align: center;
+            padding: var(--space-3xl) 0;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: var(--space-lg);
+            text-transform: uppercase;
+        }
+
+        .hero-title-line {
+            display: block;
+            opacity: 0;
+            animation: slide-in 0.6s ease-out forwards;
+        }
+
+        .hero-title-line:nth-child(1) { animation-delay: 0.1s; }
+        .hero-title-line:nth-child(2) { animation-delay: 0.2s; }
+        .hero-title-line:nth-child(3) { animation-delay: 0.3s; }
+
+        .hero-title .highlight {
+            color: var(--color-danger);
+            text-shadow: 0 0 20px var(--color-danger-glow);
+        }
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto var(--space-2xl);
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           SEARCH SECTION
+           ======================================== */
+
+        .search-section {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-border);
+            padding: var(--space-sm);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--color-info);
+            box-shadow: 0 0 20px var(--color-info-glow);
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            margin: 0 var(--space-md);
+            opacity: 0.5;
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--color-text-primary);
+            padding: var(--space-sm) 0;
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .search-button {
+            background: var(--color-info);
+            color: var(--color-bg);
+            border: none;
+            padding: var(--space-md) var(--space-xl);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 48px;
+        }
+
+        .search-button:hover,
+        .search-button:focus {
+            background: var(--color-text-primary);
+            box-shadow: 0 0 20px var(--color-info-glow);
+            outline: none;
+        }
+
+        .search-button:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .search-button:hover::before {
+            left: 100%;
+        }
+
+        /* ========================================
+           QUICK EXAMPLES
+           ======================================== */
+
+        .quick-examples {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .example-tag {
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-tag:hover {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           SEARCH DROPDOWN
+           ======================================== */
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: var(--space-sm);
+            background: var(--color-bg-secondary);
+            border: var(--border-medium) solid var(--color-border);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-dropdown.show {
+            display: block;
+            animation: dropdown-fade-in 0.2s ease;
+        }
+
+        @keyframes dropdown-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: var(--border-thin) solid var(--color-border);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item.selected {
+            background: var(--color-bg-tertiary);
+        }
+
+        .dropdown-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-icon.high {
+            background: var(--color-danger);
+            color: var(--color-bg);
+        }
+
+        .dropdown-item-icon.medium {
+            background: var(--color-warning);
+            color: var(--color-bg);
+        }
+
+        .dropdown-item-icon.low {
+            background: var(--color-success);
+            color: var(--color-bg);
+        }
+
+        .dropdown-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dropdown-item-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-item-meta {
+            font-size: 0.7rem;
+            color: var(--color-text-tertiary);
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: 2px;
+        }
+
+        .dropdown-item-score {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item-score.high { color: var(--color-danger); }
+        .dropdown-item-score.medium { color: var(--color-warning); }
+        .dropdown-item-score.low { color: var(--color-success); }
+
+        .dropdown-empty {
+            padding: var(--space-lg);
+            text-align: center;
+            color: var(--color-text-tertiary);
+            font-size: 0.8rem;
+        }
+
+        .dropdown-manual {
+            padding: var(--space-md);
+            border-top: var(--border-medium) solid var(--color-border);
+            background: var(--color-bg-tertiary);
+        }
+
+        .dropdown-manual-title {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .manual-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .manual-input {
+            width: 100%;
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--color-text-primary);
+            transition: border-color 0.2s ease;
+        }
+
+        .manual-input:focus {
+            outline: none;
+            border-color: var(--color-info);
+        }
+
+        .manual-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .manual-input-full {
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+
+        .manual-submit-btn {
+            width: 100%;
+            background: var(--color-info);
+            border: none;
+            padding: var(--space-sm);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--color-bg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .manual-submit-btn:hover {
+            box-shadow: 0 0 15px var(--color-info-glow);
+        }
+
+        /* 匹配高亮 */
+        .highlight-match {
+            color: var(--color-info);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           RECENT SCANS
+           ======================================== */
+
+        .recent-section {
+            margin-top: var(--space-3xl);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .section-line {
+            flex: 1;
+            height: var(--border-thin);
+            background: var(--color-border);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .project-card {
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-border);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-border);
+            transition: background 0.2s ease;
+        }
+
+        .project-card:hover,
+        .project-card:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card:hover::before,
+        .project-card:focus-within::before {
+            background: var(--color-info);
+        }
+
+        .project-card:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .project-card.high-risk::before {
+            background: var(--color-danger);
+        }
+
+        .project-card.medium-risk::before {
+            background: var(--color-warning);
+        }
+
+        .project-card.low-risk::before {
+            background: var(--color-success);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+
+        .project-name {
+            font-family: var(--font-display), var(--font-chinese);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .project-score {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .project-score.high { color: var(--color-danger); }
+        .project-score.medium { color: var(--color-warning); }
+        .project-score.low { color: var(--color-success); }
+
+        .project-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .project-stats {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: 0.8rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .stat-label {
+            color: var(--color-text-tertiary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-bg-tertiary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-border);
+        }
+
+        .status-dot.high {
+            background: var(--color-danger);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .status-dot.medium {
+            background: var(--color-warning);
+        }
+
+        .status-dot.low {
+            background: var(--color-success);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px currentColor; }
+            50% { opacity: 0.5; box-shadow: 0 0 10px currentColor; }
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+
+        .footer {
+            margin-top: var(--space-3xl);
+            padding: var(--space-xl) 0;
+            border-top: var(--border-medium) solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--color-text-tertiary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+        }
+
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-info);
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .search-box {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+
+            .search-button {
+                width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+        }
+
+        /* ========================================
+           UTILITY CLASSES
+           ======================================== */
+
+        .text-gradient {
+            background: linear-gradient(90deg, var(--color-danger), var(--color-warning));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glow-danger {
+            text-shadow: 0 0 10px var(--color-danger-glow);
+        }
+
+        .glow-success {
+            text-shadow: 0 0 10px var(--color-success-glow);
+        }
+
+        .border-glow {
+            box-shadow: 0 0 10px var(--color-border-glow);
+        }
+
+        /* ========================================
+           CONTRACT ADDRESS TOOLTIP
+           ======================================== */
+
+        .contract-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .contract-link:hover {
+            color: var(--color-info);
+        }
+
+        .contract-link .contract-address {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        .contract-link .contract-icon {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .contract-link:hover .contract-icon {
+            opacity: 1;
+        }
+
+        /* 合约地址弹出菜单 */
+        .contract-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: var(--color-bg-secondary);
+            border: var(--border-medium) solid var(--color-border);
+            padding: var(--space-sm);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            min-width: 140px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .contract-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--color-border);
+        }
+
+        .contract-link:hover .contract-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tooltip-action {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid transparent;
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .tooltip-action:hover {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .tooltip-action svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* 复制成功提示 */
+        .copy-toast {
+            position: fixed;
+            bottom: var(--space-xl);
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--color-success);
+            color: var(--color-bg);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .copy-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 景深背景层 -->
+    <div class="depth-container" id="depthContainer">
+        <div class="depth-layer-far" id="layerFar"></div>
+        <div class="depth-layer-mid" id="layerMid"></div>
+        <div class="depth-layer-near" id="layerNear"></div>
+        <div class="depth-particles" id="particles"></div>
+        <div class="depth-glow" id="depthGlow"></div>
+    </div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-en">TRUSTNOONE</span>
+                <span class="logo-cn">画饼粉碎机</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span>已验证项目</span>
+                    <span class="stat-value">247</span>
+                </div>
+                <div class="stat-item">
+                    <span>平均画饼指数</span>
+                    <span class="stat-value" style="color: var(--color-warning)">67</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO -->
+        <section class="hero">
+            <h1 class="hero-title">
+                <span class="hero-title-line">撕碎 NFT 项目的</span>
+                <span class="hero-title-line"><span class="highlight">虚假承诺</span></span>
+                <span class="hero-title-line">用数据说话</span>
+            </h1>
+            <p class="hero-subtitle">
+                AI 驱动的 NFT 项目可信度评估系统。通过链上数据验证项目方承诺，
+                计算画饼指数（0-100），让你一眼识破"画饼大师"。
+            </p>
+        </section>
+
+        <!-- SEARCH -->
+        <section class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="输入项目名称、Twitter 账号或合约地址..." autocomplete="off">
+                <button class="search-button" id="searchButton">验证项目</button>
+            </div>
+
+            <!-- 搜索下拉菜单 -->
+            <div class="search-dropdown" id="searchDropdown">
+                <div class="dropdown-list" id="dropdownList"></div>
+                <div class="dropdown-manual" id="manualInputSection">
+                    <div class="dropdown-manual-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                        添加新项目验证
+                    </div>
+                    <div class="manual-input-group">
+                        <input type="text" class="manual-input" id="inputTwitter" placeholder="Twitter (@username)">
+                        <input type="text" class="manual-input" id="inputWebsite" placeholder="官网 (example.com)">
+                        <input type="text" class="manual-input manual-input-full" id="inputContract" placeholder="合约地址 (0x...)">
+                    </div>
+                    <button class="manual-submit-btn" id="manualSubmitBtn">开始验证</button>
+                </div>
+            </div>
+
+            <div class="quick-examples">
+                <span class="example-tag" data-project="Azuki">Azuki</span>
+                <span class="example-tag" data-project="Bored Ape Yacht Club">Bored Ape Yacht Club</span>
+                <span class="example-tag" data-project="Doodles">Doodles</span>
+                <span class="example-tag" data-project="Pudgy Penguins">Pudgy Penguins</span>
+            </div>
+        </section>
+
+        <!-- RECENT SCANS -->
+        <section class="recent-section">
+            <div class="section-header">
+                <h2 class="section-title">最近验证</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-grid">
+                <!-- 高风险项目 -->
+                <article class="project-card high-risk" tabindex="0" role="button" aria-label="查看 Azuki 项目详情，画饼指数 78">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Azuki</h3>
+                            <p class="project-meta">@AzukiEN · 合约
+                                <span class="contract-link" data-contract="0xed5af38865e05c81cb826c3742787055585c19f2">
+                                    <span class="contract-address">0xed5af...</span>
+                                    <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <path d="M20 20l-4.05-4.05"/>
+                                        <path d="M7 13l5 5"/>
+                                        <path d="M9 6l6 6"/>
+                                    </svg>
+                                    <div class="contract-tooltip">
+                                        <span class="tooltip-action" data-action="copy">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                            复制地址
+                                        </span>
+                                        <a class="tooltip-action" href="https://etherscan.io/address/0xed5af38865e05c81cb826c3742787055585c19f2" target="_blank" data-action="etherscan">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                                <polyline points="15 3 21 3 21 9"/>
+                                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                            </svg>
+                                            Etherscan
+                                        </a>
+                                    </div>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="project-score high">78</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">12/15 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-danger)">32</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot high"></span>高风险</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 中风险项目 -->
+                <article class="project-card medium-risk" tabindex="0" role="button" aria-label="查看 Moonbirds 项目详情，画饼指数 54">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Moonbirds</h3>
+                            <p class="project-meta">@moonbirds · 合约
+                                <span class="contract-link" data-contract="0x2358170f3432838c8ee81a2968278f93d1246d2d">
+                                    <span class="contract-address">0x2358...</span>
+                                    <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <path d="M20 20l-4.05-4.05"/>
+                                        <path d="M7 13l5 5"/>
+                                        <path d="M9 6l6 6"/>
+                                    </svg>
+                                    <div class="contract-tooltip">
+                                        <span class="tooltip-action" data-action="copy">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                            复制地址
+                                        </span>
+                                        <a class="tooltip-action" href="https://etherscan.io/address/0x2358170f3432838c8ee81a2968278f93d1246d2d" target="_blank">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                                <polyline points="15 3 21 3 21 9"/>
+                                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                            </svg>
+                                            Etherscan
+                                        </a>
+                                    </div>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="project-score medium">54</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">7/10 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-warning)">58</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot medium"></span>中风险</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 低风险项目 -->
+                <article class="project-card low-risk" tabindex="0" role="button" aria-label="查看 Pudgy Penguins 项目详情，画饼指数 23">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Pudgy Penguins</h3>
+                            <p class="project-meta">@PudgyPenguins · 合约
+                                <span class="contract-link" data-contract="0xbd352549cfc118e93253d31a28f8ef6cbaac4b4c">
+                                    <span class="contract-address">0xbd35...</span>
+                                    <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <path d="M20 20l-4.05-4.05"/>
+                                        <path d="M7 13l5 5"/>
+                                        <path d="M9 6l6 6"/>
+                                    </svg>
+                                    <div class="contract-tooltip">
+                                        <span class="tooltip-action" data-action="copy">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                            复制地址
+                                        </span>
+                                        <a class="tooltip-action" href="https://etherscan.io/address/0xbd352549cfc118e93253d31a28f8ef6cbaac4b4c" target="_blank">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                                <polyline points="15 3 21 3 21 9"/>
+                                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                            </svg>
+                                            Etherscan
+                                        </a>
+                                    </div>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="project-score low">23</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">2/9 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-success)">82</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot low"></span>可信</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 高风险项目 2 -->
+                <article class="project-card high-risk" tabindex="0" role="button" aria-label="查看 CloneX 项目详情，画饼指数 71">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">CloneX</h3>
+                            <p class="project-meta">@clonex · 合约
+                                <span class="contract-link" data-contract="0x49cf6f5d4e7d247dbc89d084dde0bc32097822b">
+                                    <span class="contract-address">0x49cf...</span>
+                                    <svg class="contract-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <path d="M20 20l-4.05-4.05"/>
+                                        <path d="M7 13l5 5"/>
+                                        <path d="M9 6l6 6"/>
+                                    </svg>
+                                    <div class="contract-tooltip">
+                                        <span class="tooltip-action" data-action="copy">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                            复制地址
+                                        </span>
+                                        <a class="tooltip-action" href="https://etherscan.io/address/0x49cf6f5d4e7d247d8bc89d084dde0bc32097822b" target="_blank">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                                <polyline points="15 3 21 3 21 9"/>
+                                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                            </svg>
+                                            Etherscan
+                                        </a>
+                                    </div>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="project-score high">71</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">9/13 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-danger)">41</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot high"></span>高风险</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>© 2025 画饼粉碎机 | Powered by SpoonOS & DeepSeek</div>
+            <div class="footer-links">
+                <a href="#">关于</a>
+                <a href="#">API</a>
+                <a href="https://github.com/bonujel/nft-promise-verification" target="_blank">GitHub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ========================================
+        // 景深动效初始化
+        // ========================================
+
+        (function() {
+            const layerFar = document.getElementById('layerFar');
+            const layerMid = document.getElementById('layerMid');
+            const layerNear = document.getElementById('layerNear');
+            const depthGlow = document.getElementById('depthGlow');
+            const particlesContainer = document.getElementById('particles');
+
+            // 鼠标视差效果
+            let mouseX = 0, mouseY = 0;
+            let targetX = 0, targetY = 0;
+
+            document.addEventListener('mousemove', function(e) {
+                mouseX = (e.clientX - window.innerWidth / 2) / window.innerWidth;
+                mouseY = (e.clientY - window.innerHeight / 2) / window.innerHeight;
+
+                // 更新光晕位置
+                const glowX = e.clientX - 300;
+                const glowY = e.clientY - 300;
+                depthGlow.style.transform = `translate(${glowX}px, ${glowY}px)`;
+            });
+
+            // 平滑视差动画
+            function updateParallax() {
+                targetX += (mouseX - targetX) * 0.05;
+                targetY += (mouseY - targetY) * 0.05;
+
+                // 不同层级移动幅度不同，创造景深感
+                layerFar.style.transform = `translate(${targetX * 20}px, ${targetY * 20}px)`;
+                layerMid.style.transform = `translate(${targetX * 40}px, ${targetY * 40}px)`;
+                layerNear.style.transform = `translate(${targetX * 60}px, ${targetY * 60}px)`;
+
+                requestAnimationFrame(updateParallax);
+            }
+            updateParallax();
+
+            // 生成悬浮粒子
+            function createParticles() {
+                const particleCount = 30;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+
+                    // 随机大小
+                    const sizes = ['small', 'medium', 'large'];
+                    const size = sizes[Math.floor(Math.random() * sizes.length)];
+                    particle.classList.add(size);
+
+                    // 随机位置和动画参数
+                    const left = Math.random() * 100;
+                    const duration = 15 + Math.random() * 25; // 15-40秒
+                    const delay = Math.random() * 20;
+
+                    particle.style.left = left + '%';
+                    particle.style.animationDuration = duration + 's';
+                    particle.style.animationDelay = delay + 's';
+
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            createParticles();
+
+            // 初始化光晕位置在中心
+            depthGlow.style.left = '50%';
+            depthGlow.style.top = '50%';
+            depthGlow.style.transform = 'translate(-50%, -50%)';
+        })();
+
+        // ========================================
+        // 搜索功能
+        // ========================================
+
+        // 项目数据库（模拟已验证的项目）
+        const projectsDatabase = [
+            { name: 'Azuki', twitter: '@AzukiEN', contract: '0xed5af38865...', score: 78, risk: 'high', integrity: 32 },
+            { name: 'Moonbirds', twitter: '@moonbirds', contract: '0x2358...', score: 54, risk: 'medium', integrity: 58 },
+            { name: 'Pudgy Penguins', twitter: '@PudgyPenguins', contract: '0xbd35...', score: 23, risk: 'low', integrity: 82 },
+            { name: 'CloneX', twitter: '@clonex', contract: '0x49cf...', score: 71, risk: 'high', integrity: 41 },
+            { name: 'Bored Ape Yacht Club', twitter: '@BoredApeYC', contract: '0xBC4CA0...', score: 35, risk: 'medium', integrity: 68 },
+            { name: 'Doodles', twitter: '@Doodles', contract: '0x8a90...', score: 42, risk: 'medium', integrity: 61 },
+            { name: 'DeGods', twitter: '@DeGodsNFT', contract: '0x2452...', score: 28, risk: 'low', integrity: 75 },
+            { name: 'Azuki Elementals', twitter: '@AzukiEN', contract: '0x9b6f...', score: 82, risk: 'high', integrity: 28 },
+            { name: 'Beanz', twitter: '@AzukiEN', contract: '0x3063...', score: 65, risk: 'medium', integrity: 48 },
+            { name: 'Pudgy Penguins', twitter: '@PudgyPenguins', contract: '0xbd35...', score: 23, risk: 'low', integrity: 82 }
+        ];
+
+        // DOM 元素
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const searchDropdown = document.getElementById('searchDropdown');
+        const dropdownList = document.getElementById('dropdownList');
+        const manualSubmitBtn = document.getElementById('manualSubmitBtn');
+
+        let selectedIndex = -1;
+        let filteredProjects = [];
+
+        // 高亮匹配文本
+        function highlightMatch(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="highlight-match">$1</span>');
+        }
+
+        // 获取风险等级文本
+        function getRiskText(risk) {
+            const riskMap = { high: '高风险', medium: '中风险', low: '低风险' };
+            return riskMap[risk] || '未知';
+        }
+
+        // 渲染下拉列表
+        function renderDropdown(query) {
+            if (!query) {
+                searchDropdown.classList.remove('show');
+                return;
+            }
+
+            // 搜索匹配
+            filteredProjects = projectsDatabase.filter(p =>
+                p.name.toLowerCase().includes(query.toLowerCase()) ||
+                p.twitter.toLowerCase().includes(query.toLowerCase()) ||
+                p.contract.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 5); // 最多显示5个结果
+
+            dropdownList.innerHTML = '';
+
+            if (filteredProjects.length > 0) {
+                filteredProjects.forEach((project, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item';
+                    item.dataset.index = index;
+                    item.innerHTML = `
+                        <div class="dropdown-item-icon ${project.risk}">${project.score}</div>
+                        <div class="dropdown-item-content">
+                            <div class="dropdown-item-name">${highlightMatch(project.name, query)}</div>
+                            <div class="dropdown-item-meta">
+                                <span>${highlightMatch(project.twitter, query)}</span>
+                                <span>${project.contract}</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-item-score ${project.risk}">${project.score}</div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        sessionStorage.setItem('viewProject', project.name);
+                        window.location.href = 'project-detail.html';
+                    });
+
+                    dropdownList.appendChild(item);
+                });
+            } else {
+                dropdownList.innerHTML = '<div class="dropdown-empty">未找到匹配项目，请手动添加验证</div>';
+            }
+
+            searchDropdown.classList.add('show');
+            selectedIndex = -1;
+        }
+
+        // 更新选中状态
+        function updateSelection() {
+            document.querySelectorAll('.dropdown-item').forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+
+            // 滚动到可见区域
+            const selectedItem = dropdownList.querySelector('.dropdown-item.selected');
+            if (selectedItem) {
+                selectedItem.scrollIntoView({ block: 'nearest' });
+            }
+        }
+
+        // 搜索输入事件
+        searchInput.addEventListener('input', function() {
+            renderDropdown(this.value.trim());
+        });
+
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim()) {
+                renderDropdown(this.value.trim());
+            }
+        });
+
+        // 键盘导航
+        searchInput.addEventListener('keydown', function(e) {
+            const items = dropdownList.querySelectorAll('.dropdown-item');
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (items.length > 0) {
+                    selectedIndex = selectedIndex < items.length - 1 ? selectedIndex + 1 : 0;
+                    updateSelection();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (items.length > 0) {
+                    selectedIndex = selectedIndex > 0 ? selectedIndex - 1 : items.length - 1;
+                    updateSelection();
+                }
+            } else if (e.key === 'Enter') {
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                    items[selectedIndex].click();
+                } else {
+                    searchButton.click();
+                }
+            } else if (e.key === 'Escape') {
+                searchDropdown.classList.remove('show');
+            }
+        });
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-section')) {
+                searchDropdown.classList.remove('show');
+            }
+        });
+
+        // 验证按钮点击
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                // 先检查是否有匹配的项目
+                const matchedProject = projectsDatabase.find(p =>
+                    p.name.toLowerCase() === query.toLowerCase() ||
+                    p.twitter.toLowerCase() === query.toLowerCase()
+                );
+
+                if (matchedProject) {
+                    sessionStorage.setItem('viewProject', matchedProject.name);
+                    window.location.href = 'project-detail.html';
+                } else {
+                    sessionStorage.setItem('verifyProject', query);
+                    window.location.href = 'verification-progress.html';
+                }
+            }
+        });
+
+        // 手动输入提交
+        manualSubmitBtn.addEventListener('click', function() {
+            const twitter = document.getElementById('inputTwitter').value.trim();
+            const website = document.getElementById('inputWebsite').value.trim();
+            const contract = document.getElementById('inputContract').value.trim();
+
+            // 保存所有输入信息
+            const projectData = { name: searchInput.value.trim(), twitter, website, contract };
+            sessionStorage.setItem('newProjectData', JSON.stringify(projectData));
+            sessionStorage.setItem('verifyProject', searchInput.value.trim() || 'New Project');
+
+            window.location.href = 'verification-progress.html';
+        });
+
+        // 示例标签点击
+        document.querySelectorAll('.example-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const projectName = this.dataset.project;
+                searchInput.value = projectName;
+                renderDropdown(projectName);
+            });
+        });
+
+        // 项目卡片点击和键盘支持
+        document.querySelectorAll('.project-card').forEach(card => {
+            const handleCardClick = function() {
+                const projectName = card.querySelector('.project-name').textContent;
+                sessionStorage.setItem('viewProject', projectName);
+                window.location.href = 'project-detail.html';
+            };
+
+            card.addEventListener('click', handleCardClick);
+            card.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            });
+        });
+
+        // ========================================
+        // 合约地址复制功能
+        // ========================================
+
+        document.querySelectorAll('.contract-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+
+        document.querySelectorAll('.tooltip-action[data-action="copy"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const contractLink = this.closest('.contract-link');
+                const contractAddress = contractLink.dataset.contract;
+
+                navigator.clipboard.writeText(contractAddress).then(() => {
+                    // 显示复制成功提示
+                    let toast = document.querySelector('.copy-toast');
+                    if (!toast) {
+                        toast = document.createElement('div');
+                        toast.className = 'copy-toast';
+                        document.body.appendChild(toast);
+                    }
+                    toast.textContent = '合约地址已复制';
+                    toast.classList.add('show');
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
