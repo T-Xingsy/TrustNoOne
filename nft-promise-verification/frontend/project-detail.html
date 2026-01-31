@@ -30,6 +30,7 @@
             --color-brand-orange-glow: rgba(255, 102, 0, 0.6);
             --font-display: 'Orbitron', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             --space-xs: 4px;
             --space-sm: 8px;
             --space-md: 16px;
@@ -201,6 +202,7 @@
             letter-spacing: 0.1em;
             margin-bottom: var(--space-md);
             animation: pulse-border 2s ease-in-out infinite;
+            font-family: var(--font-chinese);
         }
 
         @keyframes pulse-border {
@@ -209,7 +211,7 @@
         }
 
         .project-name {
-            font-family: var(--font-display);
+            font-family: var(--font-display), var(--font-chinese);
             font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 900;
             line-height: 1.1;
@@ -564,6 +566,7 @@
         .promise-text {
             font-size: 0.9rem;
             margin-bottom: var(--space-xs);
+            font-family: var(--font-chinese);
         }
 
         .promise-meta {
