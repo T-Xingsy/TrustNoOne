@@ -158,41 +158,42 @@
         }
 
         .logo {
-            font-family: var(--font-display);
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 900;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: var(--space-md);
+            gap: var(--space-xs);
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            border: var(--border-thick) solid var(--color-danger);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% {
-                box-shadow: 0 0 5px var(--color-danger-glow);
-            }
-            50% {
-                box-shadow: 0 0 20px var(--color-danger-glow), 0 0 30px var(--color-danger-glow);
-            }
+        .logo-image {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
         }
 
         .logo-text {
-            background: linear-gradient(90deg, var(--color-danger), var(--color-warning));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .logo-en {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .logo-cn {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            color: #ff6600;
+            text-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+            text-transform: uppercase;
         }
 
         .header-stats {
@@ -636,8 +637,11 @@
         <!-- HEADER -->
         <header class="header">
             <div class="logo">
-                <div class="logo-icon">⚠</div>
-                <span class="logo-text">画饼粉碎机</span>
+                <img src="https://maas-log-prod.cn-wlcb.ufileos.com/anthropic/aa54eab8-68d1-4d65-8490-c63613b9bdb4/C:\Users\hwu\Downloads\Gemini_Generated_Image_jwg8rajwg8rajwg8.png?UCloudPublicKey=TOKEN_e15ba47a-d098-4fbd-9afc-a0dcf0e4e621&Expires=1769830365&Signature=zOaBgVkzqjeg6GMT97ahS+Ki/pA=" alt="Logo" class="logo-image">
+                <div class="logo-text">
+                    <span class="logo-en">TRUSTNOONE</span>
+                    <span class="logo-cn">画饼粉碎机</span>
+                </div>
             </div>
             <div class="header-stats">
                 <div class="stat-item">
