@@ -9,15 +9,15 @@
 - Chainbase 链上数据工具
 - GitHub 开发力审计工具
 """
-from typing import List
+from typing import List, Any
 from spoon_ai.tools import BaseTool, ToolManager
 import structlog
 import sys
 
-from .tools.twitter_scraper import TwitterScraper
-from .tools.web_scraper import WebScraper
-from .tools.mcp_scraper import SyncMCPWebScraper
-from .tools.promise_extractor import PromiseExtractor
+from tools.twitter_scraper import TwitterScraper
+from tools.web_scraper import WebScraper
+from tools.mcp_scraper import SyncMCPWebScraper
+from tools.promise_extractor import PromiseExtractor
 
 # Spoon-Toolkit 官方工具
 try:
@@ -29,7 +29,8 @@ try:
         GetTokenMetadataTool
     )
     CHAINBASE_AVAILABLE = True
-except ImportError:
+except Exception as e:
+    print(f"Warning: Chainbase tools not available: {e}")
     CHAINBASE_AVAILABLE = False
 
 try:
@@ -39,7 +40,8 @@ try:
         GetGitHubIssuesTool
     )
     GITHUB_AVAILABLE = True
-except ImportError:
+except Exception as e:
+    print(f"Warning: GitHub tools not available: {e}")
     GITHUB_AVAILABLE = False
 
 logger = structlog.get_logger(__name__)
@@ -48,16 +50,51 @@ logger = structlog.get_logger(__name__)
 class TwitterTool(BaseTool):
     """Twitter 数据抓取工具"""
 
-    name = "twitter_scraper"
-    description = (
+    name: str = "twitter_scraper"
+    description: str = (
         "抓取 Twitter 账号的推文数据。"
         "输入: username (Twitter 用户名), max_tweets (最大推文数, 默认 100)"
         "输出: 推文列表，包含 id, text, created_at, url 等字段"
     )
+    parameters: dict = {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string",
+                "description": "Twitter 用户名"
+            },
+            "max_tweets": {
+                "type": "integer",
+                "description": "最大推文数",
+                "default": 100
+            }
+        },
+        "required": ["username"]
+    }
 
-    def __init__(self):
-        super().__init__()
+    # 声明额外的实例属性
+    scraper: Any = None
+
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
+    def __init__(self, **data):
+        super().__init__(**data)
         self.scraper = TwitterScraper(delay_seconds=1.0)
+
+    async def execute(self, username: str, max_tweets: int = 100) -> List[dict]:
+        """
+        执行 Twitter 数据抓取（异步接口）
+
+        Args:
+            username: Twitter 用户名
+            max_tweets: 最大抓取推文数
+
+        Returns:
+            推文列表
+        """
+        return self._run(username, max_tweets)
 
     def _run(self, username: str, max_tweets: int = 100) -> List[dict]:
         """
@@ -88,16 +125,56 @@ class TwitterTool(BaseTool):
 class WebScraperTool(BaseTool):
     """网页爬取工具"""
 
-    name = "web_scraper"
-    description = (
+    name: str = "web_scraper"
+    description: str = (
         "爬取网页内容并转换为指定格式。"
         "输入: url (目标 URL), output_format (输出格式: markdown/html/text, 默认 markdown)"
         "输出: 包含 url, title, content, format 的字典"
     )
+    parameters: dict = {
+        "type": "object",
+        "properties": {
+            "url": {
+                "type": "string",
+                "description": "目标 URL"
+            },
+            "output_format": {
+                "type": "string",
+                "description": "输出格式",
+                "enum": ["markdown", "html", "text"],
+                "default": "markdown"
+            }
+        },
+        "required": ["url"]
+    }
 
-    def __init__(self):
-        super().__init__()
+    # 声明额外的实例属性
+    scraper: Any = None
+
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
+    def __init__(self, **data):
+        super().__init__(**data)
         self.scraper = WebScraper(timeout=30)
+
+    async def execute(
+        self,
+        url: str,
+        output_format: str = "markdown"
+    ) -> dict:
+        """
+        执行网页爬取（异步接口）
+
+        Args:
+            url: 目标 URL
+            output_format: 输出格式
+
+        Returns:
+            包含 url, title, content, format 的字典
+        """
+        return self._run(url, output_format)
 
     def _run(
         self,
@@ -132,17 +209,69 @@ class WebScraperTool(BaseTool):
 class PromiseExtractorTool(BaseTool):
     """承诺提取工具"""
 
-    name = "promise_extractor"
-    description = (
+    name: str = "promise_extractor"
+    description: str = (
         "使用 LLM 从文本中提取项目承诺。"
         "输入: text (输入文本), source_type (来源类型: twitter/website/whitepaper), "
         "source_url (来源 URL), confidence_threshold (置信度阈值, 默认 0.7)"
         "输出: 承诺列表，每个承诺包含 content, category, confidence 等字段"
     )
+    parameters: dict = {
+        "type": "object",
+        "properties": {
+            "text": {
+                "type": "string",
+                "description": "输入文本"
+            },
+            "source_type": {
+                "type": "string",
+                "description": "来源类型",
+                "enum": ["twitter", "website", "whitepaper"]
+            },
+            "source_url": {
+                "type": "string",
+                "description": "来源 URL"
+            },
+            "confidence_threshold": {
+                "type": "number",
+                "description": "置信度阈值",
+                "default": 0.7
+            }
+        },
+        "required": ["text", "source_type", "source_url"]
+    }
 
-    def __init__(self, llm_manager):
-        super().__init__()
+    # 声明额外的实例属性
+    extractor: Any = None
+
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
+    def __init__(self, llm_manager=None, **data):
+        super().__init__(**data)
         self.extractor = PromiseExtractor(llm_manager)
+
+    async def execute(
+        self,
+        text: str,
+        source_type: str,
+        source_url: str,
+        confidence_threshold: float = 0.7
+    ) -> List[dict]:
+        """
+        执行承诺提取（异步接口）
+
+        Args:
+            text: 输入文本
+            source_type: 来源类型
+            source_url: 来源 URL
+            confidence_threshold: 置信度阈值
+
+        Returns:
+            承诺列表
+        """
+        return self._run(text, source_type, source_url, confidence_threshold)
 
     def _run(
         self,
@@ -191,16 +320,40 @@ class MCPWebScraperTool(BaseTool):
     - 支持 JavaScript 渲染后的内容
     """
 
-    name = "mcp_web_scraper"
-    description = (
+    name: str = "mcp_web_scraper"
+    description: str = (
         "使用 MCP 协议抓取网页内容（支持动态内容）。"
         "输入: url (目标 URL), output_format (输出格式: markdown/text/html, 默认 markdown)"
         "输出: 包含 url, title, content, format, status 的字典"
         "注意: 某些网站可能有反爬保护，返回 403"
     )
+    parameters: dict = {
+        "type": "object",
+        "properties": {
+            "url": {
+                "type": "string",
+                "description": "目标 URL"
+            },
+            "output_format": {
+                "type": "string",
+                "description": "输出格式",
+                "enum": ["markdown", "text", "html"],
+                "default": "markdown"
+            }
+        },
+        "required": ["url"]
+    }
 
-    def __init__(self):
-        super().__init__()
+    # 声明额外的实例属性
+    scraper: Any = None
+    available: bool = False
+
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
+    def __init__(self, **data):
+        super().__init__(**data)
         try:
             self.scraper = SyncMCPWebScraper()
             self.available = True
@@ -212,6 +365,23 @@ class MCPWebScraperTool(BaseTool):
             )
             self.scraper = None
             self.available = False
+
+    async def execute(
+        self,
+        url: str,
+        output_format: str = "markdown"
+    ) -> dict:
+        """
+        执行 MCP 网页抓取（异步接口）
+
+        Args:
+            url: 目标 URL
+            output_format: 输出格式
+
+        Returns:
+            网页内容字典
+        """
+        return self._run(url, output_format)
 
     def _run(
         self,
@@ -269,7 +439,8 @@ def register_tools(llm_manager) -> ToolManager:
     Returns:
         配置好的 ToolManager 实例
     """
-    tool_manager = ToolManager()
+    # 收集所有工具到列表
+    tools = []
 
     # ========== 原有工具 ==========
     twitter_tool = TwitterTool()
@@ -277,10 +448,12 @@ def register_tools(llm_manager) -> ToolManager:
     mcp_web_scraper_tool = MCPWebScraperTool()  # 新增: MCP 网页抓取
     promise_extractor_tool = PromiseExtractorTool(llm_manager)
 
-    tool_manager.register_tool(twitter_tool)
-    tool_manager.register_tool(web_scraper_tool)
-    tool_manager.register_tool(mcp_web_scraper_tool)  # 注册 MCP 工具
-    tool_manager.register_tool(promise_extractor_tool)
+    tools.extend([
+        twitter_tool,
+        web_scraper_tool,
+        mcp_web_scraper_tool,
+        promise_extractor_tool
+    ])
 
     # ========== Chainbase 链上数据工具 ==========
     if CHAINBASE_AVAILABLE:
@@ -290,11 +463,13 @@ def register_tools(llm_manager) -> ToolManager:
         chainbase_nfts_tool = GetAccountNFTsTool()
         chainbase_metadata_tool = GetTokenMetadataTool()
 
-        tool_manager.register_tool(chainbase_balance_tool)
-        tool_manager.register_tool(chainbase_txs_tool)
-        tool_manager.register_tool(chainbase_tokens_tool)
-        tool_manager.register_tool(chainbase_nfts_tool)
-        tool_manager.register_tool(chainbase_metadata_tool)
+        tools.extend([
+            chainbase_balance_tool,
+            chainbase_txs_tool,
+            chainbase_tokens_tool,
+            chainbase_nfts_tool,
+            chainbase_metadata_tool
+        ])
 
         logger.info("Chainbase 工具注册成功")
     else:
@@ -309,9 +484,11 @@ def register_tools(llm_manager) -> ToolManager:
         github_prs_tool = GetGitHubPullRequestsTool()
         github_issues_tool = GetGitHubIssuesTool()
 
-        tool_manager.register_tool(github_commits_tool)
-        tool_manager.register_tool(github_prs_tool)
-        tool_manager.register_tool(github_issues_tool)
+        tools.extend([
+            github_commits_tool,
+            github_prs_tool,
+            github_issues_tool
+        ])
 
         logger.info("GitHub 工具注册成功")
     else:
@@ -320,9 +497,12 @@ def register_tools(llm_manager) -> ToolManager:
             "pip install spoon-toolkit"
         )
 
+    # 使用工具列表创建 ToolManager
+    tool_manager = ToolManager(tools=tools)
+
     logger.info(
         "工具注册完成",
-        tools_count=len(tool_manager.get_all_tools())
+        tools_count=len(tools)
     )
 
     return tool_manager

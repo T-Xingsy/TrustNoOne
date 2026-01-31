@@ -10,7 +10,7 @@ from typing import Optional, List
 from pathlib import Path
 from contextlib import contextmanager
 
-from .models import (
+from database.models import (
     NFTProject,
     Promise,
     VerificationRecord,
@@ -106,7 +106,7 @@ def create_promise(promise: Promise, db_path: str = None) -> str:
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             promise.id, promise.project_id, promise.content,
-            json.dumps([s.model_dump() for s in promise.sources]),
+            json.dumps([str(s) for s in promise.sources]),  # 将 HttpUrl 转换为字符串
             promise.promise_type.value,
             promise.target_date.isoformat() if promise.target_date else None,
             promise.verification_status.value,

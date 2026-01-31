@@ -70,7 +70,6 @@ class ListCommand:
 
         # 从数据库查询项目列表
         projects = self.db_manager.list_projects(
-            sort_by=args.sort,
             limit=args.limit
         )
 

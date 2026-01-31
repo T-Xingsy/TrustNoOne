@@ -127,8 +127,8 @@ class CLIParser:
 
         show_parser.add_argument(
             "project_id",
-            type=int,
-            help="项目 ID"
+            type=str,  # 修复: int -> str (UUID)
+            help="项目 ID (UUID)"
         )
 
         show_parser.add_argument(
@@ -159,8 +159,8 @@ class CLIParser:
 
         export_parser.add_argument(
             "project_id",
-            type=int,
-            help="项目 ID"
+            type=str,  # 修复: int -> str (UUID)
+            help="项目 ID (UUID)"
         )
 
         export_parser.add_argument(

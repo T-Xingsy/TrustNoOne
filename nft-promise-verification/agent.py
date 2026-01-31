@@ -15,29 +15,30 @@ import structlog
 import asyncio
 from datetime import datetime, timedelta
 
-from .utils.data_formatter import DataFormatter
-from .utils.deduplicator import Deduplicator
-from .database.db import DatabaseManager
-from .utils.rpc_manager import RPCManager
-from .tools.evm_tools import EVMTools
-from .verification.promise_verifier import PromiseVerifier
-from .scoring.integrity import IntegrityScorer
-from .scoring.fairness import FairnessScorer
-from .scoring.activity import ActivityScorer
-from .scoring.stability import StabilityScorer
-from .scoring.momentum import MomentumScorer
-from .scoring.index_calculator import IndexCalculator
+from utils.data_formatter import DataFormatter
+from utils.deduplicator import Deduplicator
+from database.db import DatabaseManager
+from database.models import PromiseType, VerificationStatus
+from utils.rpc_manager import RPCManager
+from tools.evm_tools import EVMTools
+from verification.promise_verifier import PromiseVerifier
+from scoring.integrity import IntegrityScorer
+from scoring.fairness import FairnessScorer
+from scoring.activity import ActivityScorer
+from scoring.stability import StabilityScorer
+from scoring.momentum import MomentumScorer
+from scoring.index_calculator import IndexCalculator
 
 # 外部脚本集成
-from .external.opensea_client import get_collection_data
-from .external.etherscan_client import (
+from external.opensea_client import get_collection_data
+from external.etherscan_client import (
     analyze_address,
     get_transactions,
     get_contract_events,
     verify_lock_event,
     get_nft_transfer_events
 )
-from .external.transaction_analyzer import analyze_transaction
+from external.transaction_analyzer import analyze_transaction
 
 logger = structlog.get_logger(__name__)
 
@@ -179,12 +180,6 @@ class VerificationAgent:
         self.formatter = DataFormatter()
         self.deduplicator = Deduplicator(similarity_threshold=0.9)
 
-        logger.info("VerificationAgent 初始化完成", mode="ai_enabled")
-
-    def _build_system_prompt(self) -> str:
-        """构建 System Prompt"""
-        return AGENT_SYSTEM_PROMPT
-
         # 初始化链上验证模块
         self.rpc_manager = rpc_manager or RPCManager()
         self.evm_tools = EVMTools(self.rpc_manager)
@@ -198,7 +193,139 @@ class VerificationAgent:
         self.momentum_scorer = MomentumScorer()
         self.index_calculator = IndexCalculator()
 
-        logger.info("VerificationAgent 初始化完成")
+        logger.info("VerificationAgent 初始化完成", mode="ai_enabled")
+
+    def _build_system_prompt(self) -> str:
+        """构建 System Prompt"""
+        return AGENT_SYSTEM_PROMPT
+
+    def _parse_datetime(self, value: Optional[str]) -> Optional[datetime]:
+        """解析日期时间字符串，失败则返回 None"""
+        if not value:
+            return None
+        if isinstance(value, datetime):
+            return value
+        try:
+            return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except Exception:
+            return None
+
+    def _normalize_promise_type(self, raw_type: Optional[str]) -> str:
+        """标准化承诺类型到数据库枚举值"""
+        if not raw_type:
+            return PromiseType.OTHER.value
+        raw = str(raw_type).lower()
+        valid_types = {t.value for t in PromiseType}
+        if raw in valid_types:
+            return raw
+        mapping = {
+            "product_launch": PromiseType.MARKETPLACE_LAUNCH.value,
+            "feature": PromiseType.FEATURE_DEVELOPMENT.value,
+            "financial": PromiseType.OTHER.value,
+            "community": PromiseType.COMMUNITY_EVENT.value,
+            "partnership": PromiseType.PARTNERSHIP.value,
+            "roadmap": PromiseType.FEATURE_DEVELOPMENT.value,
+            "other": PromiseType.OTHER.value
+        }
+        return mapping.get(raw, PromiseType.OTHER.value)
+
+    def _normalize_verification_status(self, raw_status: Optional[str]) -> str:
+        """标准化验证状态到数据库枚举值"""
+        if not raw_status:
+            return VerificationStatus.PENDING.value
+        raw = str(raw_status).lower()
+        valid_status = {s.value for s in VerificationStatus}
+        if raw in valid_status:
+            return raw
+        mapping = {
+            "broken": VerificationStatus.UNFULFILLED.value,
+            "unfulfilled": VerificationStatus.UNFULFILLED.value,
+            "fulfilled": VerificationStatus.FULFILLED.value,
+            "unverifiable": VerificationStatus.UNVERIFIABLE.value
+        }
+        return mapping.get(raw, VerificationStatus.PENDING.value)
+
+    def _build_sources_for_db(self, promise: Dict) -> List[Dict]:
+        """构建数据库需要的 sources 列表"""
+        sources: List[Dict] = []
+        source_items = promise.get("sources")
+
+        if isinstance(source_items, list) and source_items:
+            for src in source_items:
+                src_type = (
+                    src.get("type")
+                    or src.get("source_type")
+                    or promise.get("source_type")
+                    or "website"
+                )
+                src_url = (
+                    src.get("url")
+                    or src.get("source_url")
+                    or promise.get("source_url")
+                )
+                if not src_url or not str(src_url).startswith(("http://", "https://")):
+                    continue
+                published_at = self._parse_datetime(
+                    src.get("published_at")
+                    or src.get("created_at")
+                    or promise.get("created_at")
+                ) or datetime.utcnow()
+                metadata = src.get("metadata") or promise.get("metadata") or {}
+                sources.append({
+                    "type": src_type,
+                    "url": src_url,
+                    "published_at": published_at.isoformat(),
+                    "metadata": metadata
+                })
+        else:
+            src_url = promise.get("source_url")
+            if src_url and str(src_url).startswith(("http://", "https://")):
+                published_at = self._parse_datetime(
+                    promise.get("created_at")
+                ) or datetime.utcnow()
+                sources.append({
+                    "type": promise.get("source_type") or "website",
+                    "url": src_url,
+                    "published_at": published_at.isoformat(),
+                    "metadata": promise.get("metadata") or {}
+                })
+
+        return sources
+
+    def _convert_promise_for_db(self, promise: Dict, project_id: str) -> Dict:
+        """将承诺字典转换为数据库模型可接受的格式"""
+        content = (promise.get("content") or "").strip()
+        if not content:
+            raise ValueError("承诺内容为空")
+
+        sources = self._build_sources_for_db(promise)
+        if not sources:
+            raise ValueError("承诺缺少有效来源链接")
+
+        target_date = self._parse_datetime(
+            promise.get("target_date") or promise.get("deadline")
+        )
+        target_date_value = target_date.isoformat() if target_date else None
+
+        raw_weight = promise.get("importance_weight", 1.0)
+        try:
+            weight = float(raw_weight)
+        except (TypeError, ValueError):
+            weight = 1.0
+
+        return {
+            "project_id": project_id,
+            "content": content,
+            "sources": sources,
+            "promise_type": self._normalize_promise_type(
+                promise.get("promise_type") or promise.get("category")
+            ),
+            "target_date": target_date_value,
+            "verification_status": self._normalize_verification_status(
+                promise.get("verification_status")
+            ),
+            "importance_weight": weight
+        }
 
     def collect_promises(
         self,
@@ -252,27 +379,41 @@ class VerificationAgent:
             # 4. 保存到数据库
             project_id = self.db_manager.create_project(
                 name=project_name,
-                twitter_username=twitter_username,
+                twitter_account=twitter_username,
                 website_url=website_url
             )
 
+            saved_promises = []
+            skipped_count = 0
             for promise in deduplicated_promises:
-                self.db_manager.create_promise(
-                    project_id=project_id,
-                    **promise
-                )
+                try:
+                    db_promise = self._convert_promise_for_db(
+                        promise,
+                        project_id
+                    )
+                    self.db_manager.create_promise(**db_promise)
+                    saved_promises.append(db_promise)
+                except Exception as e:
+                    skipped_count += 1
+                    logger.warning(
+                        "承诺保存失败，已跳过",
+                        error=str(e),
+                        content=promise.get("content", "")[:60]
+                    )
 
             logger.info(
                 "承诺收集完成",
                 project_name=project_name,
-                promises_count=len(deduplicated_promises)
+                promises_count=len(saved_promises),
+                skipped_count=skipped_count
             )
 
             return {
                 "project_id": project_id,
                 "project_name": project_name,
-                "promises": deduplicated_promises,
-                "total_count": len(deduplicated_promises)
+                "promises": saved_promises,
+                "total_count": len(saved_promises),
+                "skipped_count": skipped_count
             }
 
         except Exception as e:
@@ -523,7 +664,7 @@ class VerificationAgent:
             # 创建项目记录
             project_id = self.db_manager.create_project(
                 name=project_name,
-                twitter_account=f"@{twitter_username}" if twitter_username else None,
+                twitter_account=twitter_username,
                 website_url=website_url
             )
 
@@ -758,7 +899,7 @@ class VerificationAgent:
             # 创建项目记录
             project_id = self.db_manager.create_project(
                 name=project_name,
-                twitter_account=f"@{twitter_username}" if twitter_username else None,
+                twitter_account=twitter_username,
                 website_url=website_url,
                 contract_address=contract_address,
                 treasury_address=treasury_address,

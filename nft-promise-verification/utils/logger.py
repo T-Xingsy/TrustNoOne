@@ -52,3 +52,7 @@ def configure_logging(log_level: str = "INFO", log_format: str = "json") -> None
 def get_logger(name: str) -> Any:
     """获取 logger 实例"""
     return structlog.get_logger(name)
+
+
+# 别名，保持向后兼容
+setup_logging = configure_logging

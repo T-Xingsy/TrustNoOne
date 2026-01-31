@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     debug: bool = Field(False, alias="DEBUG")
 
     model_config = {
-        "env_file": ".env",
+        "env_file": ("config/.env", ".env"),
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
         "extra": "ignore"  # 忽略额外的环境变量

@@ -98,17 +98,20 @@ class DataFormatter:
         merged_promises = []
 
         for promise in extracted_promises:
+            source_url = promise.get("source_url") or raw_data.get("source_url", "")
+            if source_url and not str(source_url).startswith(("http://", "https://")):
+                source_url = ""
             merged = {
                 # 承诺内容
                 "content": promise.get("content", ""),
-                "category": promise.get("category", "other"),
+                "promise_type": promise.get("promise_type", "other"),  # 修复: category -> promise_type
                 "confidence": promise.get("confidence", 0.0),
-                "deadline": promise.get("deadline"),
+                "target_date": promise.get("target_date"),  # 修复: deadline -> target_date
                 "verifiable": promise.get("verifiable", False),
 
                 # 来源信息
                 "source_type": raw_data.get("source_type", ""),
-                "source_url": promise.get("source_url", ""),
+                "source_url": source_url,
                 "source_id": raw_data.get("source_id", ""),
                 "created_at": raw_data.get("created_at", ""),
 
@@ -141,9 +144,9 @@ class DataFormatter:
         """
         normalized = {
             "content": promise.get("content", ""),
-            "category": promise.get("category", "other"),
+            "promise_type": promise.get("promise_type", "other"),  # 修复: category -> promise_type
             "confidence": float(promise.get("confidence", 0.0)),
-            "deadline": promise.get("deadline"),
+            "target_date": promise.get("target_date"),  # 修复: deadline -> target_date
             "verifiable": bool(promise.get("verifiable", False)),
             "source_type": promise.get("source_type", ""),
             "source_url": promise.get("source_url", ""),

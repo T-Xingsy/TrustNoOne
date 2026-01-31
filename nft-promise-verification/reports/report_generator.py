@@ -195,6 +195,14 @@ class ReportGenerator:
             "total_promises": total,
             "fulfilled_count": fulfilled,
             "broken_count": broken,
+            "unverifiable_count": unverifiable,
+            "fulfillment_rate": round(
+                fulfilled / total * 100, 2
+            ) if total > 0 else 0,
+            "verification_rate": round(
+                (fulfilled + broken) / total * 100, 2
+            ) if total > 0 else 0
+        }
 
     def _generate_five_dimensions_details(
         self,
@@ -259,15 +267,6 @@ class ReportGenerator:
             "available_dimensions": available_dimensions,
             "missing_dimensions": missing_dimensions,
             "weights": weights
-        }
-            "unverifiable_count": unverifiable,
-            "fulfillment_rate": round(
-                fulfilled / total * 100, 2
-            ) if total > 0 else 0,
-            "integrity_score": integrity_score.get("score", 0),
-            "integrity_status": integrity_score.get("status", "unknown"),
-            "integrity_message": integrity_score.get("message", ""),
-            "integrity_details": integrity_score.get("details", {})
         }
 
     def _generate_recommendations(
