@@ -410,14 +410,21 @@
         .score-status {
             font-size: 1.2rem;
             font-weight: 700;
-            padding: var(--space-sm) var(--space-lg);
-            background: var(--color-danger);
-            color: var(--color-bg);
-            display: inline-block;
+            color: var(--color-danger);
+            font-family: var(--font-mono);
+            display: block;
+            margin-bottom: var(--space-lg);
+        }
+
+        .complete-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-md);
         }
 
         .view-details-button {
-            margin-top: var(--space-xl);
             padding: var(--space-md) var(--space-xl);
             background: var(--color-info);
             border: none;
@@ -524,9 +531,12 @@
 
                 <div class="score-label">画饼指数</div>
                 <div class="score-reveal" id="finalScore" style="color: var(--color-danger);">78</div>
-                <div class="score-status" id="finalStatus">严重画饼</div>
 
-                <button class="view-details-button" onclick="viewDetails()">查看详细报告</button>
+                <!-- 画饼程度和按钮容器 -->
+                <div class="complete-actions">
+                    <div class="score-status" id="finalStatus" style="color: var(--color-danger);">严重画饼</div>
+                    <button class="view-details-button" onclick="viewDetails()">查看详细报告</button>
+                </div>
             </div>
         </div>
     </div>
@@ -663,10 +673,10 @@
                         scoreEl.textContent = finalScore;
                         statusEl.textContent = finalStatus;
 
-                        // 更新颜色
+                        // 更新颜色（仅文字颜色，无背景）
                         const colorVar = finalRisk === 'high' ? '--color-danger' : finalRisk === 'medium' ? '--color-warning' : '--color-success';
                         scoreEl.style.color = `var(${colorVar})`;
-                        statusEl.style.background = `var(${colorVar})`;
+                        statusEl.style.color = `var(${colorVar})`;
                     }, 500);
                 }
             }, 200);
@@ -680,6 +690,7 @@
 
         function viewDetails() {
             const projectName = sessionStorage.getItem('verifyProject') || 'Azuki';
+            let actualProjectName = projectName; // 默认使用 verifyProject 中的名称
 
             // 获取新项目数据
             const newProjectDataStr = sessionStorage.getItem('newProjectData');
@@ -690,9 +701,12 @@
                     const newProjectData = JSON.parse(newProjectDataStr);
                     const finalIntegrity = Math.max(0, Math.min(100, 100 - finalScore + Math.floor(Math.random() * 20) - 10));
 
+                    // 使用用户输入的项目名称（优先使用 name，如果没有则使用 verifyProject）
+                    actualProjectName = newProjectData.name || projectName;
+
                     // 构建完整的项目数据
                     const verifiedProject = {
-                        name: newProjectData.name || projectName,
+                        name: actualProjectName,
                         twitter: newProjectData.twitter || '@unknown',
                         website: newProjectData.website || '',
                         contract: newProjectData.contract || '0x0000000000000000000000000000000000000000',
@@ -716,7 +730,8 @@
                 }
             }
 
-            sessionStorage.setItem('viewProject', projectName);
+            // 使用实际的项目名称跳转
+            sessionStorage.setItem('viewProject', actualProjectName);
             window.location.href = 'project-detail.html';
         }
 
