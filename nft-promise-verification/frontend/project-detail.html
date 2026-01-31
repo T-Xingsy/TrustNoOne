@@ -1025,42 +1025,43 @@
                 <div class="radar-chart-container">
                     <div class="radar-chart-wrapper">
                         <svg class="radar-chart" viewBox="0 0 300 300">
-                            <!-- 背景网格 (正五边形) -->
+                            <!-- 背景网格 (正五边形) - 中心(150,150) 半径120, 从-90°开始每72°一个顶点 -->
                             <g class="radar-grid" stroke="var(--color-border)" fill="none" stroke-width="1">
                                 <!-- 100% - 半径 120 -->
-                                <polygon points="150,30 264,113 220,247 80,247 36,113"/>
+                                <polygon points="150,30 264,113 221,247 79,247 36,113"/>
                                 <!-- 75% - 半径 90 -->
-                                <polygon points="150,60 236,135 195,223 105,223 64,135"/>
+                                <polygon points="150,60 236,122 203,223 97,223 64,122"/>
                                 <!-- 50% - 半径 60 -->
-                                <polygon points="150,90 207,157 170,199 130,199 93,157"/>
+                                <polygon points="150,90 207,131 185,199 115,199 93,131"/>
                                 <!-- 25% - 半径 30 -->
-                                <polygon points="150,120 178,179 145,175 155,175 122,179"/>
+                                <polygon points="150,120 179,141 168,224 132,224 121,141"/>
                             </g>
 
                             <!-- 轴线 (从中心到各顶点) -->
                             <g class="radar-axes" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4">
                                 <line x1="150" y1="150" x2="150" y2="30"/>
                                 <line x1="150" y1="150" x2="264" y2="113"/>
-                                <line x1="150" y1="150" x2="220" y2="247"/>
-                                <line x1="150" y1="150" x2="80" y2="247"/>
+                                <line x1="150" y1="150" x2="221" y2="247"/>
+                                <line x1="150" y1="150" x2="79" y2="247"/>
                                 <line x1="150" y1="150" x2="36" y2="113"/>
                             </g>
 
                             <!-- 数据区域 -->
                             <!-- 诚信32%, 公平性55%, 开发力41%, 财务72%, 动能58% -->
+                            <!-- 数据点坐标 = 中心 + 半径*(score/100) * (cos(角度), sin(角度)) -->
                             <g class="radar-data">
                                 <polygon class="radar-polygon"
-                                    points="150,112 213,130 200,220 109,206 103,135"
+                                    points="150,112 237,125 177,219 105,201 87,126"
                                     fill="rgba(204, 51, 51, 0.25)"
                                     stroke="var(--color-danger)"
                                     stroke-width="2"/>
 
                                 <!-- 数据点 -->
                                 <circle cx="150" cy="112" r="5" fill="var(--color-danger)" class="radar-point"/>
-                                <circle cx="213" cy="130" r="5" fill="var(--color-warning)" class="radar-point"/>
-                                <circle cx="200" cy="220" r="5" fill="var(--color-success)" class="radar-point"/>
-                                <circle cx="109" cy="206" r="5" fill="var(--color-warning)" class="radar-point"/>
-                                <circle cx="103" cy="135" r="5" fill="var(--color-danger)" class="radar-point"/>
+                                <circle cx="237" cy="125" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="177" cy="219" r="5" fill="var(--color-success)" class="radar-point"/>
+                                <circle cx="105" cy="201" r="5" fill="var(--color-warning)" class="radar-point"/>
+                                <circle cx="87" cy="126" r="5" fill="var(--color-danger)" class="radar-point"/>
                             </g>
 
                             <!-- 标签 -->
