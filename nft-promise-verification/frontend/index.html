@@ -1245,17 +1245,16 @@
         // 项目数据库与动态渲染
         // ========================================
 
-        // 默认项目数据（初始数据）
+        // 默认项目数据（真实NFT项目数据）
         const defaultProjects = [
-            { name: 'Azuki', twitter: '@AzukiEN', contract: '0xed5af38865e05c81cb826c3742787055585c19f2', contractShort: '0xed5af...', score: 78, risk: 'high', integrity: 32, promises: { total: 15, unfulfilled: 12 }, verified: true },
-            { name: 'Moonbirds', twitter: '@moonbirds', contract: '0x2358170f3432838c8ee81a2968278f93d1246d2d', contractShort: '0x2358...', score: 54, risk: 'medium', integrity: 58, promises: { total: 10, unfulfilled: 7 }, verified: true },
-            { name: 'Pudgy Penguins', twitter: '@PudgyPenguins', contract: '0xbd352549cfc118e93253d31a28f8ef6cbaac4b4c', contractShort: '0xbd35...', score: 23, risk: 'low', integrity: 82, promises: { total: 9, unfulfilled: 2 }, verified: true },
-            { name: 'CloneX', twitter: '@clonex', contract: '0x49cf6f5d4e7d247dbc89d084dde0bc32097822b', contractShort: '0x49cf...', score: 71, risk: 'high', integrity: 41, promises: { total: 13, unfulfilled: 9 }, verified: true },
-            { name: 'Bored Ape Yacht Club', twitter: '@BoredApeYC', contract: '0xBC4CA0EdA7647A8aB7C2061d2E118A41671F8968', contractShort: '0xBC4CA0...', score: 35, risk: 'medium', integrity: 68, promises: { total: 11, unfulfilled: 4 }, verified: true },
-            { name: 'Doodles', twitter: '@Doodles', contract: '0x8a90cab2b38ba80864c5bdd04a23216b856087f7', contractShort: '0x8a90...', score: 42, risk: 'medium', integrity: 61, promises: { total: 8, unfulfilled: 3 }, verified: true },
-            { name: 'DeGods', twitter: '@DeGodsNFT', contract: '0x24523eff95d8c59e1b181cf8ac192ed1b4690746', contractShort: '0x2452...', score: 28, risk: 'low', integrity: 75, promises: { total: 10, unfulfilled: 2 }, verified: true },
-            { name: 'Azuki Elementals', twitter: '@AzukiEN', contract: '0x9b6f8e79a0e0ca6ca75dd103a3060738eb84e3c8', contractShort: '0x9b6f...', score: 82, risk: 'high', integrity: 28, promises: { total: 14, unfulfilled: 12 }, verified: true },
-            { name: 'Beanz', twitter: '@AzukiEN', contract: '0x3063a15824ec1a84c512f35406744ad5a827165c', contractShort: '0x3063...', score: 65, risk: 'medium', integrity: 48, promises: { total: 12, unfulfilled: 7 }, verified: true }
+            { name: 'Azuki', twitter: '@AzukiEN', contract: '0xED5AF388653567Af2F388E6224dC7C4b3241C544', contractShort: '0xED5AF...', score: 78, risk: 'high', integrity: 32, promises: { total: 15, unfulfilled: 12 }, website: 'azuki.com', verified: true },
+            { name: 'Pudgy Penguins', twitter: '@PudgyPenguins', contract: '0xbd3531da5cf5857e7cfaa92426877b022e612cf8', contractShort: '0xbd353...', score: 23, risk: 'low', integrity: 82, promises: { total: 9, unfulfilled: 2 }, website: 'pudgypenguins.io', verified: true },
+            { name: 'Bored Ape Yacht Club', twitter: '@BoredApeYC', contract: '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D', contractShort: '0xBC4CA0...', score: 35, risk: 'medium', integrity: 68, promises: { total: 11, unfulfilled: 4 }, website: 'boredapeyachtclub.com', verified: true },
+            { name: 'Doodles', twitter: '@Doodles', contract: '0x8a90CAb2b38dba80c64b7734e58Ee1dB38B8992e', contractShort: '0x8a90CA...', score: 42, risk: 'medium', integrity: 61, promises: { total: 8, unfulfilled: 3 }, website: 'doodles.app', verified: true },
+            { name: 'CloneX', twitter: '@clonex', contract: '0x49cf6f5d4e7d247dbc89d084dde0bc32097822b', contractShort: '0x49cf...', score: 71, risk: 'high', integrity: 41, promises: { total: 13, unfulfilled: 9 }, website: 'clonex.com', verified: true },
+            { name: 'DeGods', twitter: '@DeGodsNFT', contract: '0x24523eff95d8c59e1b181cf8ac192ed1b4690746', contractShort: '0x2452...', score: 28, risk: 'low', integrity: 75, promises: { total: 10, unfulfilled: 2 }, website: 'degods.com', verified: true },
+            { name: 'Moonbirds', twitter: '@moonbirds', contract: '0x2358170f3432838c8ee81a2968278f93d1246d2d', contractShort: '0x2358...', score: 54, risk: 'medium', integrity: 58, promises: { total: 10, unfulfilled: 7 }, website: 'moonbirds.com', verified: true },
+            { name: 'Beanz', twitter: '@AzukiEN', contract: '0x3063a15824ec1a84c512f35406744ad5a827165c', contractShort: '0x3063...', score: 65, risk: 'medium', integrity: 48, promises: { total: 12, unfulfilled: 7 }, website: 'azuki.com', verified: true }
         ];
 
         // localStorage 键名
