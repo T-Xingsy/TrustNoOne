@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画饼粉碎机 | NFT 项目可信度评估</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           DESIGN SYSTEM - 画饼粉碎机
+           ======================================== */
+
+        :root {
+            /* 核心配色 - 警报系统风格 */
+            --color-bg: #0a0a0a;
+            --color-bg-secondary: #111111;
+            --color-bg-tertiary: #1a1a1a;
+            --color-border: #333333;
+            --color-border-glow: #444444;
+
+            /* 状态颜色 - 荧光系 */
+            --color-danger: #ff2d2d;
+            --color-danger-glow: rgba(255, 45, 45, 0.3);
+            --color-warning: #ffaa00;
+            --color-warning-glow: rgba(255, 170, 0, 0.3);
+            --color-success: #00ff88;
+            --color-success-glow: rgba(0, 255, 136, 0.3);
+            --color-info: #00d4ff;
+            --color-info-glow: rgba(0, 212, 255, 0.3);
+
+            /* 文字颜色 */
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #888888;
+            --color-text-tertiary: #555555;
+
+            /* 画饼指数渐变 */
+            --gradient-low: #00ff88;
+            --gradient-mid: #ffaa00;
+            --gradient-high: #ff2d2d;
+
+            /* 字体 */
+            --font-display: 'Orbitron', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* 间距 */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+
+            /* 边框 */
+            --border-thin: 1px;
+            --border-medium: 2px;
+            --border-thick: 3px;
+        }
+
+        /* ========================================
+           BASE STYLES
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Focus visible for accessibility */
+        :focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* 背景网格 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(var(--color-border-glow) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-border-glow) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 扫描线效果 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        /* ========================================
+           LAYOUT
+           ======================================== */
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+
+        /* ========================================
+           HEADER
+           ======================================== */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg) 0;
+            border-bottom: var(--border-thick) solid var(--color-border);
+            margin-bottom: var(--space-3xl);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border: var(--border-thick) solid var(--color-danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 5px var(--color-danger-glow);
+            }
+            50% {
+                box-shadow: 0 0 20px var(--color-danger-glow), 0 0 30px var(--color-danger-glow);
+            }
+        }
+
+        .logo-text {
+            background: linear-gradient(90deg, var(--color-danger), var(--color-warning));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .stat-value {
+            color: var(--color-success);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           HERO SECTION
+           ======================================== */
+
+        .hero {
+            text-align: center;
+            padding: var(--space-3xl) 0;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: var(--space-lg);
+            text-transform: uppercase;
+        }
+
+        .hero-title-line {
+            display: block;
+            opacity: 0;
+            animation: slide-in 0.6s ease-out forwards;
+        }
+
+        .hero-title-line:nth-child(1) { animation-delay: 0.1s; }
+        .hero-title-line:nth-child(2) { animation-delay: 0.2s; }
+        .hero-title-line:nth-child(3) { animation-delay: 0.3s; }
+
+        .hero-title .highlight {
+            color: var(--color-danger);
+            text-shadow: 0 0 20px var(--color-danger-glow);
+        }
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto var(--space-2xl);
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           SEARCH SECTION
+           ======================================== */
+
+        .search-section {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-border);
+            padding: var(--space-sm);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--color-info);
+            box-shadow: 0 0 20px var(--color-info-glow);
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            margin: 0 var(--space-md);
+            opacity: 0.5;
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--color-text-primary);
+            padding: var(--space-sm) 0;
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .search-button {
+            background: var(--color-info);
+            color: var(--color-bg);
+            border: none;
+            padding: var(--space-md) var(--space-xl);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 48px;
+        }
+
+        .search-button:hover,
+        .search-button:focus {
+            background: var(--color-text-primary);
+            box-shadow: 0 0 20px var(--color-info-glow);
+            outline: none;
+        }
+
+        .search-button:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .search-button:hover::before {
+            left: 100%;
+        }
+
+        /* ========================================
+           QUICK EXAMPLES
+           ======================================== */
+
+        .quick-examples {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .example-tag {
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-tag:hover {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           RECENT SCANS
+           ======================================== */
+
+        .recent-section {
+            margin-top: var(--space-3xl);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .section-line {
+            flex: 1;
+            height: var(--border-thin);
+            background: var(--color-border);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .project-card {
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-border);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-border);
+            transition: background 0.2s ease;
+        }
+
+        .project-card:hover,
+        .project-card:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card:hover::before,
+        .project-card:focus-within::before {
+            background: var(--color-info);
+        }
+
+        .project-card:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .project-card.high-risk::before {
+            background: var(--color-danger);
+        }
+
+        .project-card.medium-risk::before {
+            background: var(--color-warning);
+        }
+
+        .project-card.low-risk::before {
+            background: var(--color-success);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+
+        .project-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .project-score {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .project-score.high { color: var(--color-danger); }
+        .project-score.medium { color: var(--color-warning); }
+        .project-score.low { color: var(--color-success); }
+
+        .project-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .project-stats {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: 0.8rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .stat-label {
+            color: var(--color-text-tertiary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-bg-tertiary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: var(--color-success);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+
+        .footer {
+            margin-top: var(--space-3xl);
+            padding: var(--space-xl) 0;
+            border-top: var(--border-medium) solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--color-text-tertiary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+        }
+
+        .footer-links a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-info);
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .search-box {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+
+            .search-button {
+                width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+        }
+
+        /* ========================================
+           UTILITY CLASSES
+           ======================================== */
+
+        .text-gradient {
+            background: linear-gradient(90deg, var(--color-danger), var(--color-warning));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glow-danger {
+            text-shadow: 0 0 10px var(--color-danger-glow);
+        }
+
+        .glow-success {
+            text-shadow: 0 0 10px var(--color-success-glow);
+        }
+
+        .border-glow {
+            box-shadow: 0 0 10px var(--color-border-glow);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">⚠</div>
+                <span class="logo-text">画饼粉碎机</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span>已验证项目</span>
+                    <span class="stat-value">247</span>
+                </div>
+                <div class="stat-item">
+                    <span>平均画饼指数</span>
+                    <span class="stat-value" style="color: var(--color-warning)">67</span>
+                </div>
+                <div class="stat-item">
+                    <span>在线</span>
+                    <span class="stat-value">●</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO -->
+        <section class="hero">
+            <h1 class="hero-title">
+                <span class="hero-title-line">撕碎 NFT 项目的</span>
+                <span class="hero-title-line"><span class="highlight">虚假承诺</span></span>
+                <span class="hero-title-line">用数据说话</span>
+            </h1>
+            <p class="hero-subtitle">
+                AI 驱动的 NFT 项目可信度评估系统。通过链上数据验证项目方承诺，
+                计算画饼指数（0-100），让你一眼识破"画饼大师"。
+            </p>
+        </section>
+
+        <!-- SEARCH -->
+        <section class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="输入项目名称、Twitter 账号或合约地址...">
+                <button class="search-button">验证项目</button>
+            </div>
+            <div class="quick-examples">
+                <span class="example-tag">Azuki</span>
+                <span class="example-tag">Bored Ape Yacht Club</span>
+                <span class="example-tag">Doodles</span>
+                <span class="example-tag">Pudgy Penguins</span>
+            </div>
+        </section>
+
+        <!-- RECENT SCANS -->
+        <section class="recent-section">
+            <div class="section-header">
+                <h2 class="section-title">最近验证</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-grid">
+                <!-- 高风险项目 -->
+                <article class="project-card high-risk" tabindex="0" role="button" aria-label="查看 Azuki 项目详情，画饼指数 78">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Azuki</h3>
+                            <p class="project-meta">@AzukiEN · 合约 0xed5af...</p>
+                        </div>
+                        <div class="project-score high">78</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">12/15 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-danger)">32</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot active"></span>高风险</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 中风险项目 -->
+                <article class="project-card medium-risk" tabindex="0" role="button" aria-label="查看 Moonbirds 项目详情，画饼指数 54">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Moonbirds</h3>
+                            <p class="project-meta">@moonbirds · 合约 0x2358...</p>
+                        </div>
+                        <div class="project-score medium">54</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">7/10 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-warning)">58</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot"></span>中风险</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 低风险项目 -->
+                <article class="project-card low-risk" tabindex="0" role="button" aria-label="查看 Pudgy Penguins 项目详情，画饼指数 23">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">Pudgy Penguins</h3>
+                            <p class="project-meta">@PudgyPenguins · 合约 0xbd35...</p>
+                        </div>
+                        <div class="project-score low">23</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">2/9 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-success)">82</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot"></span>可信</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 高风险项目 2 -->
+                <article class="project-card high-risk" tabindex="0" role="button" aria-label="查看 CloneX 项目详情，画饼指数 71">
+                    <div class="project-header">
+                        <div>
+                            <h3 class="project-name">CloneX</h3>
+                            <p class="project-meta">@clonex · 合约 0x49cf...</p>
+                        </div>
+                        <div class="project-score high">71</div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <span class="stat-label">承诺</span>
+                            <span class="stat-value">9/13 未兑现</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">诚信分</span>
+                            <span class="stat-value" style="color: var(--color-danger)">41</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">状态</span>
+                            <span class="status-badge"><span class="status-dot active"></span>高风险</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>© 2025 画饼粉碎机 | Powered by SpoonOS & DeepSeek</div>
+            <div class="footer-links">
+                <a href="#">关于</a>
+                <a href="#">API</a>
+                <a href="#">GitHub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 搜索功能
+        document.querySelector('.search-button').addEventListener('click', function() {
+            const input = document.querySelector('.search-input');
+            const query = input.value.trim();
+            if (query) {
+                // 保存项目名到sessionStorage，跳转到验证页
+                sessionStorage.setItem('verifyProject', query);
+                window.location.href = 'verification-progress.html';
+            }
+        });
+
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-button').click();
+            }
+        });
+
+        // 示例标签点击
+        document.querySelectorAll('.example-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const searchInput = document.querySelector('.search-input');
+                searchInput.value = this.textContent;
+                // 自动触发搜索
+                document.querySelector('.search-button').click();
+            });
+        });
+
+        // 项目卡片点击和键盘支持
+        document.querySelectorAll('.project-card').forEach(card => {
+            const handleCardClick = function() {
+                const projectName = card.querySelector('.project-name').textContent;
+                sessionStorage.setItem('viewProject', projectName);
+                window.location.href = 'project-detail.html';
+            };
+
+            card.addEventListener('click', handleCardClick);
+            card.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azuki - 画饼指数 78 | 画饼粉碎机</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 继承基础样式 */
+        :root {
+            --color-bg: #0a0a0a;
+            --color-bg-secondary: #111111;
+            --color-bg-tertiary: #1a1a1a;
+            --color-border: #333333;
+            --color-border-glow: #444444;
+            --color-danger: #ff2d2d;
+            --color-danger-glow: rgba(255, 45, 45, 0.3);
+            --color-warning: #ffaa00;
+            --color-warning-glow: rgba(255, 170, 0, 0.3);
+            --color-success: #00ff88;
+            --color-success-glow: rgba(0, 255, 136, 0.3);
+            --color-info: #00d4ff;
+            --color-info-glow: rgba(0, 212, 255, 0.3);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #888888;
+            --color-text-tertiary: #555555;
+            --font-display: 'Orbitron', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Focus visible for accessibility */
+        :focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(var(--color-border-glow) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-border-glow) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+
+        /* ========================================
+           BACK NAV
+           ======================================== */
+
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) 0;
+            margin-bottom: var(--space-lg);
+            border-bottom: var(--border-thin) solid var(--color-border);
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.3s ease;
+            padding: var(--space-sm);
+            min-height: 44px;
+            min-width: 44px;
+            cursor: pointer;
+        }
+
+        .back-link:hover,
+        .back-link:focus {
+            color: var(--color-info);
+        }
+
+        /* ========================================
+           PROJECT HEADER
+           ======================================== */
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-3xl);
+        }
+
+        @media (max-width: 900px) {
+            .project-header {
+                flex-direction: column;
+            }
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-danger);
+            color: var(--color-bg);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-md);
+            animation: pulse-border 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 5px var(--color-danger-glow); }
+            50% { box-shadow: 0 0 20px var(--color-danger-glow), 0 0 30px var(--color-danger-glow); }
+        }
+
+        .project-name {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: var(--space-md);
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .meta-label {
+            color: var(--color-text-tertiary);
+        }
+
+        .meta-value {
+            color: var(--color-text-primary);
+        }
+
+        .meta-value a {
+            color: var(--color-info);
+            text-decoration: none;
+        }
+
+        .meta-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* ========================================
+           SCORE DISPLAY
+           ======================================== */
+
+        .score-display {
+            text-align: center;
+            padding: var(--space-xl);
+            background: var(--color-bg-secondary);
+            border: var(--border-thick) solid var(--color-danger);
+            position: relative;
+            min-width: 200px;
+        }
+
+        .score-display::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--color-danger), var(--color-warning), var(--color-danger));
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .score-value {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--color-danger);
+            text-shadow: 0 0 30px var(--color-danger-glow);
+        }
+
+        .score-status {
+            font-size: 0.8rem;
+            color: var(--color-danger);
+            margin-top: var(--space-sm);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           FIVE DIMENSIONS
+           ======================================== */
+
+        .dimensions-section {
+            margin-bottom: var(--space-3xl);
+        }
+
+        /* ========================================
+           RADAR CHART
+           ======================================== */
+
+        .radar-chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: var(--space-2xl);
+            padding: var(--space-2xl);
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+        }
+
+        .radar-chart {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 45, 45, 0.1));
+        }
+
+        .radar-polygon {
+            animation: radar-fill 1s ease-out forwards;
+            transform-origin: center;
+        }
+
+        @keyframes radar-fill {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .radar-point {
+            cursor: pointer;
+            transition: r 0.3s ease;
+        }
+
+        .radar-point:hover {
+            r: 8;
+        }
+
+        .radar-legend {
+            display: flex;
+            gap: var(--space-lg);
+            margin-top: var(--space-lg);
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 1em;
+            background: var(--color-info);
+        }
+
+        .dimensions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .dimension-card {
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dimension-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--color-border);
+            transition: width 0.5s ease;
+        }
+
+        .dimension-card.high::after {
+            background: var(--color-success);
+            width: var(--score-percent, 0%);
+        }
+
+        .dimension-card.medium::after {
+            background: var(--color-warning);
+            width: var(--score-percent, 0%);
+        }
+
+        .dimension-card.low::after {
+            background: var(--color-danger);
+            width: var(--score-percent, 0%);
+        }
+
+        .dimension-name {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .dimension-score {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+
+        .dimension-score.high { color: var(--color-success); }
+        .dimension-score.medium { color: var(--color-warning); }
+        .dimension-score.low { color: var(--color-danger); }
+
+        .dimension-bar {
+            height: 4px;
+            background: var(--color-bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: var(--space-sm);
+        }
+
+        .dimension-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+
+        .dimension-bar-fill.high { background: var(--color-success); }
+        .dimension-bar-fill.medium { background: var(--color-warning); }
+        .dimension-bar-fill.low { background: var(--color-danger); }
+
+        .dimension-desc {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* ========================================
+           PROMISES LIST
+           ======================================== */
+
+        .promises-section {
+            margin-bottom: var(--space-3xl);
+        }
+
+        .promises-filter {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            color: var(--color-text-secondary);
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .filter-button:hover,
+        .filter-button:focus {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            outline: none;
+        }
+
+        .filter-button.active {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .promises-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .promise-card {
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            padding: var(--space-lg);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--space-lg);
+            align-items: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .promise-card:hover,
+        .promise-card:focus {
+            border-color: var(--color-info);
+            transform: translateX(4px);
+        }
+
+        .promise-card:focus {
+            outline: 2px solid var(--color-info);
+            outline-offset: -2px;
+            z-index: 1;
+        }
+
+        .promise-status {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .promise-status.fulfilled { color: var(--color-success); }
+        .promise-status.unfulfilled { color: var(--color-danger); }
+        .promise-status.unverifiable { color: var(--color-text-tertiary); }
+
+        .promise-content {
+            flex: 1;
+        }
+
+        .promise-text {
+            font-size: 0.9rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .promise-meta {
+            font-size: 0.7rem;
+            color: var(--color-text-tertiary);
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .promise-meta a {
+            color: var(--color-info);
+            text-decoration: none;
+        }
+
+        .promise-meta a:hover {
+            text-decoration: underline;
+        }
+
+        .promise-type {
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-bg-tertiary);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+        }
+
+        .promise-card {
+            cursor: pointer;
+        }
+
+        .promise-expand-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .promise-card.expanded .promise-expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .promise-details {
+            display: none;
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: var(--border-thin) solid var(--color-border);
+        }
+
+        .promise-card.expanded .promise-details {
+            display: block;
+            animation: slide-down 0.3s ease;
+        }
+
+        @keyframes slide-down {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .promise-detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            padding: var(--space-xs) 0;
+            color: var(--color-text-secondary);
+        }
+
+        .promise-detail-label {
+            color: var(--color-text-tertiary);
+        }
+
+        .promise-evidence {
+            margin-top: var(--space-sm);
+            padding: var(--space-sm);
+            background: var(--color-bg-tertiary);
+            border-left: 2px solid var(--color-info);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        .promise-evidence-title {
+            font-weight: 700;
+            color: var(--color-info);
+            margin-bottom: var(--space-xs);
+        }
+
+        /* ========================================
+           TIMELINE
+           ======================================== */
+
+        .timeline-section {
+            margin-bottom: var(--space-3xl);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: var(--space-xl);
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: var(--space-xl);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: calc(-1 * var(--space-xl) - 5px);
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+        }
+
+        .timeline-item.verified::before {
+            background: var(--color-success);
+            border-color: var(--color-success);
+        }
+
+        .timeline-item.pending::before {
+            background: var(--color-warning);
+            border-color: var(--color-warning);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .timeline-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(5px);
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.3);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .timeline-date {
+            font-size: 0.7rem;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .timeline-content {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .timeline-score {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-bg-tertiary);
+            font-size: 0.75rem;
+        }
+
+        .timeline-score-value {
+            font-family: var(--font-display);
+            font-weight: 700;
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+
+        .footer {
+            padding: var(--space-xl) 0;
+            border-top: var(--border-thin) solid var(--color-border);
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--color-text-tertiary);
+        }
+
+        /* ========================================
+           SHARE BUTTONS
+           ======================================== */
+
+        .share-section {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            background: var(--color-bg-secondary);
+            border: var(--border-thin) solid var(--color-border);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .share-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-bg-tertiary);
+            border: var(--border-thin) solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .share-button:hover,
+        .share-button:focus {
+            border-color: var(--color-info);
+            color: var(--color-info);
+            background: rgba(0, 212, 255, 0.1);
+            outline: none;
+        }
+
+        .share-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 分享成功提示 */
+        .share-toast {
+            position: fixed;
+            bottom: var(--space-xl);
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--color-success);
+            color: var(--color-bg);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .share-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+
+        @media (max-width: 768px) {
+            .promise-card {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+
+            .promise-status {
+                order: -1;
+            }
+
+            .dimensions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- BACK NAV -->
+        <nav class="back-nav">
+            <a href="index.html" class="back-link">
+                <span>←</span>
+                <span>返回搜索</span>
+            </a>
+        </nav>
+
+        <!-- PROJECT HEADER -->
+        <header class="project-header">
+            <div class="project-info">
+                <span class="project-badge">⚠ 高画饼风险</span>
+                <h1 class="project-name">Azuki</h1>
+                <div class="project-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Twitter:</span>
+                        <span class="meta-value"><a href="#">@AzukiEN</a></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">官网:</span>
+                        <span class="meta-value"><a href="#">azuki.com</a></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">合约:</span>
+                        <span class="meta-value">0xed5af38865...d4b4</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">最后验证:</span>
+                        <span class="meta-value">2025-01-30</span>
+                    </div>
+                </div>
+            </div>
+            <div class="score-display">
+                <div class="score-label">画饼指数</div>
+                <div class="score-value">78</div>
+                <div class="score-status">严重画饼</div>
+            </div>
+        </header>
+
+        <!-- FIVE DIMENSIONS -->
+        <section class="dimensions-section">
+            <h2 class="section-title">五维审计</h2>
+
+            <!-- 雷达图 -->
+            <div class="radar-chart-container">
+                <svg class="radar-chart" viewBox="0 0 300 300">
+                    <!-- 背景网格 (五边形) -->
+                    <!-- 中心 (150,150), 半径 120 -->
+                    <!-- 五个顶点: 顶部(150,30), 右上(264,95), 右下(229,247), 左下(71,247), 左上(36,95) -->
+                    <g class="radar-grid" stroke="var(--color-border)" fill="none" stroke-width="1">
+                        <!-- 外圈 (100%) - 半径 120 -->
+                        <polygon points="150,30 264,95 229,247 71,247 36,95"/>
+                        <!-- 80% - 半径 96 -->
+                        <polygon points="150,54 247,110 219,228 81,228 53,110"/>
+                        <!-- 60% - 半径 72 -->
+                        <polygon points="150,78 230,125 209,209 91,209 70,125"/>
+                        <!-- 40% - 半径 48 -->
+                        <polygon points="150,102 214,140 199,190 101,190 86,140"/>
+                        <!-- 20% - 半径 24 -->
+                        <polygon points="150,126 197,155 188,171 112,171 103,155"/>
+                    </g>
+
+                    <!-- 轴线 (从中心到各顶点) -->
+                    <g class="radar-axes" stroke="var(--color-border)" stroke-width="1" stroke-dasharray="4,4">
+                        <line x1="150" y1="150" x2="150" y2="30"/>
+                        <line x1="150" y1="150" x2="264" y2="95"/>
+                        <line x1="150" y1="150" x2="229" y2="247"/>
+                        <line x1="150" y1="150" x2="71" y2="247"/>
+                        <line x1="150" y1="150" x2="36" y2="95"/>
+                    </g>
+
+                    <!-- 数据区域 -->
+                    <!-- 诚信32%: 150-(120*0.32*1)=111, 150-(120*0.32*0)=150 -> 错误 -->
+                    <!-- 正确计算: 每个轴向从中心(150,150)到顶点的方向上，按比例取点 -->
+                    <!-- 诚信32%: 顶部轴, y = 150 - 120*0.32 = 111.2 -->
+                    <!-- 公平性55%: 右上轴, x = 150 + (264-150)*0.55 = 212.7, y = 150 + (95-150)*0.55 = 119.75 -->
+                    <!-- 开发力41%: 左上轴, x = 150 + (36-150)*0.41 = 103.24, y = 150 + (95-150)*0.41 = 127.45 -->
+                    <!-- 财务72%: 右下轴, x = 150 + (229-150)*0.72 = 206.88, y = 150 + (247-150)*0.72 = 219.84 -->
+                    <!-- 动能58%: 左下轴, x = 150 + (71-150)*0.58 = 104.18, y = 150 + (247-150)*0.58 = 206.26 -->
+                    <g class="radar-data">
+                        <polygon class="radar-polygon"
+                            points="150,111 213,120 103,127 207,220 104,206"
+                            fill="rgba(255, 45, 45, 0.2)"
+                            stroke="var(--color-danger)"
+                            stroke-width="2"/>
+
+                        <!-- 数据点 -->
+                        <circle cx="150" cy="111" r="5" fill="var(--color-danger)" class="radar-point"/>
+                        <circle cx="213" cy="120" r="5" fill="var(--color-warning)" class="radar-point"/>
+                        <circle cx="103" cy="127" r="5" fill="var(--color-danger)" class="radar-point"/>
+                        <circle cx="207" cy="220" r="5" fill="var(--color-success)" class="radar-point"/>
+                        <circle cx="104" cy="206" r="5" fill="var(--color-warning)" class="radar-point"/>
+                    </g>
+
+                    <!-- 标签 -->
+                    <g class="radar-labels" font-size="11" fill="var(--color-text-secondary)">
+                        <text x="150" y="20" text-anchor="middle" font-weight="700">诚信</text>
+                        <text x="275" y="95" text-anchor="start" font-weight="700">公平性</text>
+                        <text x="245" y="268" text-anchor="middle" font-weight="700">财务</text>
+                        <text x="55" y="268" text-anchor="middle" font-weight="700">动能</text>
+                        <text x="25" y="95" text-anchor="end" font-weight="700">开发力</text>
+                    </g>
+                </svg>
+
+                <!-- 雷达图图例 -->
+                <div class="radar-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: var(--color-danger);"></span>
+                        <span>低分 (&lt;50)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: var(--color-warning);"></span>
+                        <span>中等 (50-70)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: var(--color-success);"></span>
+                        <span>高分 (&gt;70)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dimensions-grid">
+                <!-- 诚信 -->
+                <div class="dimension-card low" style="--score-percent: 32%;">
+                    <div class="dimension-name">诚信审计 (30%)</div>
+                    <div class="dimension-score low">32</div>
+                    <div class="dimension-bar">
+                        <div class="dimension-bar-fill low" style="width: 32%;"></div>
+                    </div>
+                    <div class="dimension-desc">10条承诺中仅3条兑现</div>
+                </div>
+
+                <!-- 公平性 -->
+                <div class="dimension-card medium" style="--score-percent: 55%;">
+                    <div class="dimension-name">公平性 (20%)</div>
+                    <div class="dimension-score medium">55</div>
+                    <div class="dimension-bar">
+                        <div class="dimension-bar-fill medium" style="width: 55%;"></div>
+                    </div>
+                    <div class="dimension-desc">NFT 分布中度集中</div>
+                </div>
+
+                <!-- 开发力 -->
+                <div class="dimension-card low" style="--score-percent: 41%;">
+                    <div class="dimension-name">开发力 (20%)</div>
+                    <div class="dimension-score low">41</div>
+                    <div class="dimension-bar">
+                        <div class="dimension-bar-fill low" style="width: 41%;"></div>
+                    </div>
+                    <div class="dimension-desc">GitHub 活跃度下降</div>
+                </div>
+
+                <!-- 财务稳定性 -->
+                <div class="dimension-card high" style="--score-percent: 72%;">
+                    <div class="dimension-name">财务稳定性 (15%)</div>
+                    <div class="dimension-score high">72</div>
+                    <div class="dimension-bar">
+                        <div class="dimension-bar-fill high" style="width: 72%;"></div>
+                    </div>
+                    <div class="dimension-desc">国库资金相对稳定</div>
+                </div>
+
+                <!-- 社区动能 -->
+                <div class="dimension-card medium" style="--score-percent: 58%;">
+                    <div class="dimension-name">社区动能 (15%)</div>
+                    <div class="dimension-score medium">58</div>
+                    <div class="dimension-bar">
+                        <div class="dimension-bar-fill medium" style="width: 58%;"></div>
+                    </div>
+                    <div class="dimension-desc">Twitter 活跃度一般</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROMISES -->
+        <section class="promises-section">
+            <h2 class="section-title">承诺验证清单</h2>
+            <div class="promises-filter">
+                <button class="filter-button active">全部 (15)</button>
+                <button class="filter-button">✅ 已兑现 (3)</button>
+                <button class="filter-button">❌ 未兑现 (10)</button>
+                <button class="filter-button">❓ 无法验证 (2)</button>
+            </div>
+            <div class="promises-list">
+                <!-- 未兑现承诺 -->
+                <article class="promise-card" data-status="unfulfilled">
+                    <div class="promise-status unfulfilled">❌</div>
+                    <div class="promise-content">
+                        <p class="promise-text">"将在 2024 Q1 空投 10000 个虚拟 BEANZ 给社区持有者"</p>
+                        <div class="promise-meta">
+                            <span>来源: Twitter</span>
+                            <a href="#" target="_blank">查看推文 →</a>
+                            <span>承诺时间: 2024-01-15</span>
+                            <span class="promise-expand-icon">▼</span>
+                        </div>
+                        <div class="promise-details">
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">承诺类型:</span>
+                                <span>空投承诺</span>
+                            </div>
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">截止日期:</span>
+                                <span>2024-03-31 (已逾期)</span>
+                            </div>
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">验证状态:</span>
+                                <span style="color: var(--color-danger);">未兑现</span>
+                            </div>
+                            <div class="promise-evidence">
+                                <div class="promise-evidence-title">链上验证结果:</div>
+                                查询 ERC-20 转账事件，未发现针对 Azuki 持有者的 BEANZ 空投记录。国库地址 0x7E1F... 在 2024 Q1 期间无相关大额转账。
+                            </div>
+                        </div>
+                    </div>
+                    <span class="promise-type">空投</span>
+                </article>
+
+                <article class="promise-card" data-status="unfulfilled">
+                    <div class="promise-status unfulfilled">❌</div>
+                    <div class="promise-content">
+                        <p class="promise-text">"锁定 500 ETH 用于项目国库，为期 2 年"</p>
+                        <div class="promise-meta">
+                            <span>来源: 官网公告</span>
+                            <a href="#" target="_blank">查看原文 →</a>
+                            <span>承诺时间: 2023-06-01</span>
+                            <span class="promise-expand-icon">▼</span>
+                        </div>
+                        <div class="promise-details">
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">承诺类型:</span>
+                                <span>资金锁定</span>
+                            </div>
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">截止日期:</span>
+                                <span>2025-06-01</span>
+                            </div>
+                            <div class="promise-evidence">
+                                <div class="promise-evidence-title">链上验证结果:</div>
+                                国库地址当前余额: 127 ETH。历史记录显示在 2023-08 有大额转出事件，未达到承诺的 500 ETH 锁定量。
+                            </div>
+                        </div>
+                    </div>
+                    <span class="promise-type">资金锁定</span>
+                </article>
+
+                <article class="promise-card" data-status="unfulfilled">
+                    <div class="promise-status unfulfilled">❌</div>
+                    <div class="promise-content">
+                        <p class="promise-text">"每月至少 20 次 GitHub 提交，保持开发活跃"</p>
+                        <div class="promise-meta">
+                            <span>来源: 白皮书</span>
+                            <a href="#" target="_blank">查看原文 →</a>
+                            <span>承诺时间: 2023-03-01</span>
+                            <span class="promise-expand-icon">▼</span>
+                        </div>
+                        <div class="promise-details">
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">承诺类型:</span>
+                                <span>开发活动</span>
+                            </div>
+                            <div class="promise-evidence">
+                                <div class="promise-evidence-title">GitHub 验证结果:</div>
+                                azukiateam/azuki-earth 仓库在过去 6 个月平均每月提交次数: 8次，未达到承诺的 20次/月。
+                            </div>
+                        </div>
+                    </div>
+                    <span class="promise-type">开发活动</span>
+                </article>
+
+                <!-- 已兑现承诺 -->
+                <article class="promise-card" data-status="fulfilled">
+                    <div class="promise-status fulfilled">✅</div>
+                    <div class="promise-content">
+                        <p class="promise-text">"Elementals 系列将于 2023 年夏季发布"</p>
+                        <div class="promise-meta">
+                            <span>来源: Twitter</span>
+                            <a href="#" target="_blank">查看推文 →</a>
+                            <span>承诺时间: 2023-04-01</span>
+                            <span class="promise-expand-icon">▼</span>
+                        </div>
+                        <div class="promise-details">
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">承诺类型:</span>
+                                <span>产品发布</span>
+                            </div>
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">兑现日期:</span>
+                                <span>2023-06-27</span>
+                            </div>
+                            <div class="promise-evidence">
+                                <div class="promise-evidence-title">验证结果:</div>
+                                Azuki Elementals 系列于 2023年6月27日正式发布，合约地址 0x9b6f...，共 10,000 枚 NFT。
+                            </div>
+                        </div>
+                    </div>
+                    <span class="promise-type">产品发布</span>
+                </article>
+
+                <!-- 无法验证 -->
+                <article class="promise-card" data-status="unverifiable">
+                    <div class="promise-status unverifiable">❓</div>
+                    <div class="promise-content">
+                        <p class="promise-text">"将与 3 家知名品牌建立合作关系"</p>
+                        <div class="promise-meta">
+                            <span>来源: Twitter</span>
+                            <a href="#" target="_blank">查看推文 →</a>
+                            <span>承诺时间: 2023-08-15</span>
+                            <span class="promise-expand-icon">▼</span>
+                        </div>
+                        <div class="promise-details">
+                            <div class="promise-detail-item">
+                                <span class="promise-detail-label">承诺类型:</span>
+                                <span>合作伙伴</span>
+                            </div>
+                            <div class="promise-evidence">
+                                <div class="promise-evidence-title">验证结果:</div>
+                                无法通过链上数据验证品牌合作关系。需要人工确认相关合作公告。
+                            </div>
+                        </div>
+                    </div>
+                    <span class="promise-type">合作伙伴</span>
+                </article>
+            </div>
+        </section>
+
+        <!-- SHARE SECTION -->
+        <section class="share-section">
+            <button class="share-button" onclick="copyShareLink()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span>复制链接</span>
+            </button>
+            <button class="share-button" onclick="shareOnTwitter()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                <span>分享到 X</span>
+            </button>
+        </section>
+
+        <!-- TIMELINE -->
+        <section class="timeline-section">
+            <h2 class="section-title">验证历史</h2>
+            <div class="timeline">
+                <div class="timeline-item verified">
+                    <div class="timeline-date">2025-01-30</div>
+                    <div class="timeline-content">完成验证，画饼指数 78（高风险）</div>
+                    <div class="timeline-score">
+                        <span>诚信分:</span>
+                        <span class="timeline-score-value" style="color: var(--color-danger);">32</span>
+                    </div>
+                </div>
+                <div class="timeline-item verified">
+                    <div class="timeline-date">2024-10-15</div>
+                    <div class="timeline-content">完成验证，画饼指数 65（中高风险）</div>
+                    <div class="timeline-score">
+                        <span>诚信分:</span>
+                        <span class="timeline-score-value" style="color: var(--color-warning);">45</span>
+                    </div>
+                </div>
+                <div class="timeline-item verified">
+                    <div class="timeline-date">2024-06-20</div>
+                    <div class="timeline-content">完成验证，画饼指数 52（中风险）</div>
+                    <div class="timeline-score">
+                        <span>诚信分:</span>
+                        <span class="timeline-score-value" style="color: var(--color-warning);">56</span>
+                    </div>
+                </div>
+                <div class="timeline-item verified">
+                    <div class="timeline-date">2024-02-01</div>
+                    <div class="timeline-content">首次验证，画饼指数 38（低风险）</div>
+                    <div class="timeline-score">
+                        <span>诚信分:</span>
+                        <span class="timeline-score-value" style="color: var(--color-success);">72</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>数据来源: Twitter、Etherscan、GitHub、OpenSea | 验证由 AI Agent 自动完成</p>
+            <p style="margin-top: 8px;">© 2025 画饼粉碎机</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取要查看的项目名
+        const projectName = sessionStorage.getItem('viewProject') || 'Azuki';
+        document.title = `${projectName} - 画饼指数 78 | 画饼粉碎机`;
+        document.querySelectorAll('.project-name').forEach(el => {
+            el.textContent = projectName;
+        });
+
+        // 承诺卡片展开/折叠
+        document.querySelectorAll('.promise-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // 忽略链接点击
+                if (e.target.tagName === 'A') return;
+
+                this.classList.toggle('expanded');
+            });
+        });
+
+        // 筛选按钮
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // 获取筛选类型
+                const filterText = this.textContent;
+                let filterType = 'all';
+                if (filterText.includes('已兑现')) filterType = 'fulfilled';
+                else if (filterText.includes('未兑现')) filterType = 'unfulfilled';
+                else if (filterText.includes('无法验证')) filterType = 'unverifiable';
+
+                // 筛选承诺卡片
+                document.querySelectorAll('.promise-card').forEach(card => {
+                    const status = card.querySelector('.promise-status');
+                    if (filterType === 'all') {
+                        card.style.display = 'grid';
+                    } else if (status.classList.contains(filterType)) {
+                        card.style.display = 'grid';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 时间轴点击事件
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const date = this.querySelector('.timeline-date').textContent;
+                const score = this.querySelector('.timeline-score-value').textContent;
+                showToast(`查看 ${date} 的历史版本（画饼指数: ${score}）`);
+            });
+        });
+
+        // 分享功能
+        function copyShareLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('链接已复制到剪贴板');
+            });
+        }
+
+        function shareOnTwitter() {
+            const score = document.querySelector('.score-value').textContent;
+            const text = `🔍 ${projectName} 的画饼指数: ${score}！通过画饼粉碎机查看NFT项目可信度评估报告`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+            window.open(url, '_blank');
+        }
+
+        // Toast 提示
+        function showToast(message) {
+            let toast = document.querySelector('.share-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.className = 'share-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 动画进度条
+        setTimeout(() => {
+            document.querySelectorAll('.dimension-card').forEach(card => {
+                const percent = card.style.getPropertyValue('--score-percent');
+                card.style.setProperty('--score-percent', percent);
+            });
+        }, 100);
+    </script>
+</body>
+</html>
