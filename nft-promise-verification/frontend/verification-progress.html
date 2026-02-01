@@ -638,9 +638,55 @@
             }, 1500);
         }
 
+        // 基于项目名称生成固定分数（同一项目每次验证都是相同分数）
+        function generateFixedScore(projectName) {
+            // 简单的字符串哈希函数
+            let hash = 0;
+            for (let i = 0; i < projectName.length; i++) {
+                const char = projectName.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转换为32位整数
+            }
+
+            // 使用哈希值生成固定的分数（15-85分）
+            const score = Math.abs(hash % 71) + 15;
+
+            return score;
+        }
+
+        // 基于项目名称生成固定的五维评分
+        function generateDimensions(projectName, baseScore) {
+            let hash = 0;
+            for (let i = 0; i < projectName.length; i++) {
+                const char = projectName.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+
+            const absHash = Math.abs(hash);
+
+            // 每个维度基于哈希值生成，但有合理的范围
+            return {
+                integrity: Math.max(20, Math.min(95, 60 + (absHash % 40) - 20)), // 40-80
+                fairness: Math.max(30, Math.min(90, 55 + ((absHash >> 4) % 35) - 17)), // 38-73
+                development: Math.max(40, Math.min(85, 60 + ((absHash >> 8) % 25) - 12)), // 48-73
+                stability: Math.max(35, Math.min(88, 58 + ((absHash >> 12) % 30) - 15)), // 43-73
+                momentum: Math.max(30, Math.min(92, 55 + ((absHash >> 16) % 37) - 18)) // 37-73
+            };
+        }
+
         function startVerification() {
             activateStep(0);
             updateThinking();
+
+            // 获取项目名称并生成固定分数
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectName = urlParams.get('project') || 'Unknown';
+
+            // 生成基于项目名称的固定分数
+            finalScore = generateFixedScore(projectName);
+            finalRisk = finalScore >= 60 ? 'high' : finalScore >= 40 ? 'medium' : 'low';
+            finalStatus = finalRisk === 'high' ? '严重画饼' : finalRisk === 'medium' ? '中度画饼' : '可信';
 
             const interval = setInterval(() => {
                 if (progress < 100) {
@@ -656,10 +702,6 @@
                     }
                 } else {
                     clearInterval(interval);
-                    // 生成最终分数
-                    finalScore = Math.floor(Math.random() * 70) + 15; // 15-85
-                    finalRisk = finalScore >= 60 ? 'high' : finalScore >= 40 ? 'medium' : 'low';
-                    finalStatus = finalRisk === 'high' ? '严重画饼' : finalRisk === 'medium' ? '中度画饼' : '可信';
 
                     // 显示完成状态
                     setTimeout(() => {
@@ -701,10 +743,26 @@
             if (newProjectDataStr) {
                 try {
                     const newProjectData = JSON.parse(newProjectDataStr);
-                    const finalIntegrity = Math.max(0, Math.min(100, 100 - finalScore + Math.floor(Math.random() * 20) - 10));
 
                     // 使用用户输入的项目名称（优先使用 name，如果没有则使用 URL 参数）
                     actualProjectName = newProjectData.name || projectName;
+
+                    // 基于项目名称生成固定的诚信分和承诺数量
+                    const dimensions = generateDimensions(actualProjectName, finalScore);
+                    const finalIntegrity = dimensions.integrity;
+
+                    // 基于哈希生成固定的承诺数量（与评分相关）
+                    let hash = 0;
+                    for (let i = 0; i < actualProjectName.length; i++) {
+                        hash = ((hash << 5) - hash) + actualProjectName.charCodeAt(i);
+                        hash = hash & hash;
+                    }
+                    const absHash = Math.abs(hash);
+
+                    // 评分越高，未兑现承诺越多
+                    const baseTotal = 8 + (absHash % 7); // 8-14条承诺
+                    const riskMultiplier = finalScore >= 60 ? 0.7 : finalScore >= 40 ? 0.5 : 0.3;
+                    const unfulfilledCount = Math.floor(baseTotal * riskMultiplier);
 
                     // 构建完整的项目数据
                     const verifiedProject = {
@@ -717,10 +775,11 @@
                         risk: finalRisk,
                         integrity: finalIntegrity,
                         promises: {
-                            total: Math.floor(Math.random() * 10) + 5,
-                            unfulfilled: Math.floor(Math.random() * 8) + 1
+                            total: baseTotal,
+                            unfulfilled: unfulfilledCount
                         },
-                        verified: true
+                        verified: true,
+                        dimensions: dimensions // 保存五维评分
                     };
 
                     // 保存到 sessionStorage 供 index.html 读取
