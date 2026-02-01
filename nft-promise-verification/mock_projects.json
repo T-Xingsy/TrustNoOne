@@ -1,0 +1,538 @@
+{
+  "projects": [
+    {
+      "name": "Azuki",
+      "twitter_account": "AzukiOfficial",
+      "website_url": "https://www.azuki.com",
+      "contract_address": "0xED5AF388653567Af2F388E6224dC7C4b3241C544",
+      "treasury_address": "0x3B3525F60eeea4a1eF554df5425912c2a532875D",
+      "github_repo": "https://github.com/azuki-dao",
+      "opensea_slug": "azuki",
+      "description": "Azuki 是一个知名的 NFT 项目，以高质量的艺术作品和活跃的社区著称",
+      "promises": [
+        {
+          "content": "2024年Q1推出 Azuki Elementals 系列",
+          "promise_type": "nft_minting",
+          "target_date": "2024-03-31",
+          "confidence": 0.95,
+          "verifiable": true,
+          "importance_weight": 1.5,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/AzukiOfficial/status/1234567890",
+              "published_at": "2023-12-15T10:00:00Z",
+              "metadata": {
+                "likes": 15000,
+                "retweets": 3000,
+                "author": "@AzukiOfficial"
+              }
+            }
+          ],
+          "verification_status": "fulfilled",
+          "verification_result": {
+            "status": "fulfilled",
+            "message": "Azuki Elementals 系列已于 2024年3月20日成功推出，共铸造 20,000 个 NFT",
+            "evidence": {
+              "contract_address": "0x3AF2A97414d1101E2107a70E7F33955da1346305",
+              "mint_count": 20000,
+              "mint_date": "2024-03-20",
+              "network": "ethereum"
+            }
+          }
+        },
+        {
+          "content": "与知名品牌合作推出实体商品",
+          "promise_type": "partnership",
+          "target_date": "2024-06-30",
+          "confidence": 0.85,
+          "verifiable": true,
+          "importance_weight": 1.2,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.azuki.com/roadmap",
+              "published_at": "2024-01-10T00:00:00Z",
+              "metadata": {
+                "section": "Roadmap 2024"
+              }
+            }
+          ],
+          "verification_status": "fulfilled",
+          "verification_result": {
+            "status": "fulfilled",
+            "message": "Azuki 与 Uniqlo 合作推出联名 T 恤系列，已于 2024年5月上市",
+            "evidence": {
+              "partnership_announcement": "https://www.azuki.com/news/uniqlo-collab",
+              "launch_date": "2024-05-15"
+            }
+          }
+        },
+        {
+          "content": "开发 Azuki DAO 治理系统",
+          "promise_type": "feature_development",
+          "target_date": "2024-09-30",
+          "confidence": 0.75,
+          "verifiable": true,
+          "importance_weight": 1.8,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/AzukiOfficial/status/1234567891",
+              "published_at": "2024-02-01T12:00:00Z",
+              "metadata": {
+                "likes": 8000,
+                "retweets": 1500
+              }
+            }
+          ],
+          "verification_status": "pending",
+          "verification_result": null
+        },
+        {
+          "content": "举办线下持有者见面会（东京）",
+          "promise_type": "community_event",
+          "target_date": "2024-07-15",
+          "confidence": 0.90,
+          "verifiable": true,
+          "importance_weight": 1.0,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/AzukiOfficial/status/1234567892",
+              "published_at": "2024-05-20T08:00:00Z",
+              "metadata": {
+                "likes": 12000,
+                "retweets": 2500
+              }
+            }
+          ],
+          "verification_status": "fulfilled",
+          "verification_result": {
+            "status": "fulfilled",
+            "message": "Azuki Tokyo Meetup 已于 2024年7月15日成功举办，超过 500 名持有者参加",
+            "evidence": {
+              "event_photos": "https://www.azuki.com/events/tokyo-2024",
+              "attendees": 500
+            }
+          }
+        },
+        {
+          "content": "为持有者空投 BEAN 代币",
+          "promise_type": "airdrop",
+          "target_date": "2024-08-31",
+          "confidence": 0.80,
+          "verifiable": true,
+          "importance_weight": 1.3,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.azuki.com/tokenomics",
+              "published_at": "2024-03-01T00:00:00Z",
+              "metadata": {
+                "section": "Token Distribution"
+              }
+            }
+          ],
+          "verification_status": "pending",
+          "verification_result": null
+        }
+      ],
+      "expected_scores": {
+        "promise_breaking_index": 20,
+        "integrity_score": 80,
+        "fairness_score": 75,
+        "activity_score": 85,
+        "stability_score": 80,
+        "momentum_score": 70
+      }
+    },
+    {
+      "name": "Moonbirds",
+      "twitter_account": "moonbirds",
+      "website_url": "https://www.proof.xyz/moonbirds",
+      "contract_address": "0x23581767a106ae21c074b2276D25e5C3e136a68b",
+      "treasury_address": "0x7B3525F60eeea4a1eF554df5425912c2a532875D",
+      "github_repo": null,
+      "opensea_slug": "proof-moonbirds",
+      "description": "Moonbirds 是 PROOF Collective 推出的 NFT 项目，以独特的猫头鹰形象和嵌套机制著称",
+      "promises": [
+        {
+          "content": "推出 Moonbirds Mythics 系列",
+          "promise_type": "nft_minting",
+          "target_date": "2024-02-28",
+          "confidence": 0.90,
+          "verifiable": true,
+          "importance_weight": 1.5,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/moonbirds/status/1234567893",
+              "published_at": "2023-11-01T10:00:00Z",
+              "metadata": {
+                "likes": 10000,
+                "retweets": 2000
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "Moonbirds Mythics 系列原定于 2024年2月推出，但已延期至 2024年Q3，目前仍未发布",
+            "evidence": {
+              "delay_announcement": "https://twitter.com/moonbirds/status/1234567894",
+              "new_target_date": "2024-09-30"
+            }
+          }
+        },
+        {
+          "content": "开发 Moonbirds 元宇宙空间",
+          "promise_type": "feature_development",
+          "target_date": "2024-06-30",
+          "confidence": 0.70,
+          "verifiable": true,
+          "importance_weight": 1.8,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.proof.xyz/roadmap",
+              "published_at": "2023-12-01T00:00:00Z",
+              "metadata": {
+                "section": "2024 Roadmap"
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "元宇宙空间开发进度缓慢，目前仅完成概念设计阶段，距离实际上线还有较长时间",
+            "evidence": {
+              "progress_update": "https://www.proof.xyz/updates/metaverse-progress",
+              "completion_percentage": 15
+            }
+          }
+        },
+        {
+          "content": "为持有者提供独家商品折扣",
+          "promise_type": "partnership",
+          "target_date": "2024-03-31",
+          "confidence": 0.85,
+          "verifiable": true,
+          "importance_weight": 1.0,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/moonbirds/status/1234567895",
+              "published_at": "2024-01-15T12:00:00Z",
+              "metadata": {
+                "likes": 5000,
+                "retweets": 800
+              }
+            }
+          ],
+          "verification_status": "fulfilled",
+          "verification_result": {
+            "status": "fulfilled",
+            "message": "Moonbirds 持有者可在 PROOF 商店享受 20% 折扣，已于 2024年3月1日生效",
+            "evidence": {
+              "discount_page": "https://shop.proof.xyz/moonbirds-discount"
+            }
+          }
+        },
+        {
+          "content": "举办线上 AMA 活动",
+          "promise_type": "community_event",
+          "target_date": "2024-04-30",
+          "confidence": 0.95,
+          "verifiable": true,
+          "importance_weight": 0.8,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/moonbirds/status/1234567896",
+              "published_at": "2024-04-01T08:00:00Z",
+              "metadata": {
+                "likes": 3000,
+                "retweets": 500
+              }
+            }
+          ],
+          "verification_status": "fulfilled",
+          "verification_result": {
+            "status": "fulfilled",
+            "message": "Moonbirds AMA 已于 2024年4月25日在 Twitter Spaces 举办，超过 2000 人参与",
+            "evidence": {
+              "recording_url": "https://twitter.com/i/spaces/1234567890"
+            }
+          }
+        },
+        {
+          "content": "推出 Moonbirds 移动应用",
+          "promise_type": "feature_development",
+          "target_date": "2024-05-31",
+          "confidence": 0.60,
+          "verifiable": true,
+          "importance_weight": 1.5,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.proof.xyz/announcements/mobile-app",
+              "published_at": "2024-02-01T00:00:00Z",
+              "metadata": {
+                "section": "Product Updates"
+              }
+            }
+          ],
+          "verification_status": "unverifiable",
+          "verification_result": {
+            "status": "unverifiable",
+            "message": "移动应用开发计划已公布，但目前无法验证实际进度，官方未提供更新",
+            "evidence": {}
+          }
+        },
+        {
+          "content": "为嵌套持有者提供额外奖励",
+          "promise_type": "airdrop",
+          "target_date": "2024-07-31",
+          "confidence": 0.75,
+          "verifiable": true,
+          "importance_weight": 1.2,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/moonbirds/status/1234567897",
+              "published_at": "2024-05-01T10:00:00Z",
+              "metadata": {
+                "likes": 6000,
+                "retweets": 1200
+              }
+            }
+          ],
+          "verification_status": "pending",
+          "verification_result": null
+        }
+      ],
+      "expected_scores": {
+        "promise_breaking_index": 50,
+        "integrity_score": 50,
+        "fairness_score": 60,
+        "activity_score": 45,
+        "stability_score": 55,
+        "momentum_score": 40
+      }
+    },
+    {
+      "name": "PixelmonNFT",
+      "twitter_account": "Pixelmon",
+      "website_url": "https://www.pixelmon.club",
+      "contract_address": "0x32973908FaeE0Bf825A343000fE412ebE56F802A",
+      "treasury_address": "0x8B3525F60eeea4a1eF554df5425912c2a532875D",
+      "github_repo": null,
+      "opensea_slug": "pixelmon-generation-1",
+      "description": "Pixelmon 是一个备受争议的 NFT 项目，因初始艺术质量问题和多个未兑现承诺而饱受批评",
+      "promises": [
+        {
+          "content": "推出高质量的 3D Pixelmon 模型",
+          "promise_type": "feature_development",
+          "target_date": "2023-06-30",
+          "confidence": 0.90,
+          "verifiable": true,
+          "importance_weight": 2.0,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/Pixelmon/status/1234567898",
+              "published_at": "2023-03-01T10:00:00Z",
+              "metadata": {
+                "likes": 20000,
+                "retweets": 5000
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "承诺的高质量 3D 模型至今未交付，项目方多次延期但未给出明确时间表",
+            "evidence": {
+              "community_complaints": "https://twitter.com/search?q=pixelmon%203d%20models",
+              "delay_count": 5
+            }
+          }
+        },
+        {
+          "content": "开发 Pixelmon 游戏（类似 Pokemon）",
+          "promise_type": "feature_development",
+          "target_date": "2023-12-31",
+          "confidence": 0.85,
+          "verifiable": true,
+          "importance_weight": 2.0,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.pixelmon.club/whitepaper",
+              "published_at": "2022-12-01T00:00:00Z",
+              "metadata": {
+                "section": "Game Development"
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "游戏开发严重滞后，目前仅有概念演示，距离可玩版本遥遥无期",
+            "evidence": {
+              "demo_video": "https://www.youtube.com/watch?v=demo123",
+              "completion_percentage": 5
+            }
+          }
+        },
+        {
+          "content": "为持有者空投 $PXLM 代币",
+          "promise_type": "airdrop",
+          "target_date": "2023-09-30",
+          "confidence": 0.80,
+          "verifiable": true,
+          "importance_weight": 1.5,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/Pixelmon/status/1234567899",
+              "published_at": "2023-06-01T12:00:00Z",
+              "metadata": {
+                "likes": 8000,
+                "retweets": 1500
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "代币空投计划已取消，项目方称因市场环境不佳而无限期推迟",
+            "evidence": {
+              "cancellation_announcement": "https://twitter.com/Pixelmon/status/1234567900"
+            }
+          }
+        },
+        {
+          "content": "与游戏工作室合作开发",
+          "promise_type": "partnership",
+          "target_date": "2023-08-31",
+          "confidence": 0.70,
+          "verifiable": true,
+          "importance_weight": 1.8,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/Pixelmon/status/1234567901",
+              "published_at": "2023-05-01T10:00:00Z",
+              "metadata": {
+                "likes": 5000,
+                "retweets": 800
+              }
+            }
+          ],
+          "verification_status": "unverifiable",
+          "verification_result": {
+            "status": "unverifiable",
+            "message": "项目方声称已与某游戏工作室合作，但从未公布具体信息，无法验证真实性",
+            "evidence": {}
+          }
+        },
+        {
+          "content": "举办线下持有者活动",
+          "promise_type": "community_event",
+          "target_date": "2023-10-31",
+          "confidence": 0.60,
+          "verifiable": true,
+          "importance_weight": 1.0,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.pixelmon.club/events",
+              "published_at": "2023-07-01T00:00:00Z",
+              "metadata": {
+                "section": "Community Events"
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "承诺的线下活动从未举办，项目方后续也未提及此事",
+            "evidence": {
+              "community_feedback": "https://discord.com/channels/pixelmon/complaints"
+            }
+          }
+        },
+        {
+          "content": "推出 Pixelmon 第二代系列",
+          "promise_type": "nft_minting",
+          "target_date": "2024-03-31",
+          "confidence": 0.50,
+          "verifiable": true,
+          "importance_weight": 1.5,
+          "sources": [
+            {
+              "type": "twitter",
+              "url": "https://twitter.com/Pixelmon/status/1234567902",
+              "published_at": "2023-12-01T08:00:00Z",
+              "metadata": {
+                "likes": 3000,
+                "retweets": 400
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "第二代系列计划已被搁置，项目方表示需要先完成第一代的承诺",
+            "evidence": {
+              "postponement_announcement": "https://twitter.com/Pixelmon/status/1234567903"
+            }
+          }
+        },
+        {
+          "content": "建立 Pixelmon DAO 治理",
+          "promise_type": "feature_development",
+          "target_date": "2024-01-31",
+          "confidence": 0.40,
+          "verifiable": true,
+          "importance_weight": 1.3,
+          "sources": [
+            {
+              "type": "website",
+              "url": "https://www.pixelmon.club/governance",
+              "published_at": "2023-10-01T00:00:00Z",
+              "metadata": {
+                "section": "DAO Roadmap"
+              }
+            }
+          ],
+          "verification_status": "unfulfilled",
+          "verification_result": {
+            "status": "broken",
+            "message": "DAO 治理系统从未启动，相关页面已从官网移除",
+            "evidence": {
+              "removed_page": "https://web.archive.org/web/*/pixelmon.club/governance"
+            }
+          }
+        }
+      ],
+      "expected_scores": {
+        "promise_breaking_index": 80,
+        "integrity_score": 20,
+        "fairness_score": 30,
+        "activity_score": 15,
+        "stability_score": 25,
+        "momentum_score": 10
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "created_at": "2026-01-31T00:00:00Z",
+    "description": "NFT Promise Verification Mock Data - 包含 3 个典型项目（可信、一般、画饼）",
+    "total_projects": 3,
+    "total_promises": 18
+  }
+}

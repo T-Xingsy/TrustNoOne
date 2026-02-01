@@ -44,7 +44,7 @@ class LLMManager:
                 self.openai_client = OpenAI(api_key=openai_key)
                 _log("info", "OpenAI client initialized successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize OpenAI client: {e}")
+                _log("error", f"Failed to initialize OpenAI client: {e}")
 
         # 初始化 DeepSeek 客户端 (使用 OpenAI 兼容接口)
         if deepseek_key:
@@ -55,7 +55,7 @@ class LLMManager:
                 )
                 _log("info", "DeepSeek client initialized successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize DeepSeek client: {e}")
+                _log("error", f"Failed to initialize DeepSeek client: {e}")
 
     def get_client(self, model: str = None):
         """
@@ -122,10 +122,6 @@ class LLMManager:
                 temperature=kwargs.get("temperature", 0.7)
             )
             return response.choices[0].message.content
-
-
-# 全局 LLM 管理器实例
-llm_manager = LLMManager()
 
 
 # 全局 LLM 管理器实例

@@ -689,8 +689,10 @@
         }
 
         function viewDetails() {
-            const projectName = sessionStorage.getItem('verifyProject') || 'Azuki';
-            let actualProjectName = projectName; // 默认使用 verifyProject 中的名称
+            // 从 URL 参数获取项目名称（更可靠）
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectName = urlParams.get('project');
+            let actualProjectName = projectName; // 默认使用 URL 参数中的名称
 
             // 获取新项目数据
             const newProjectDataStr = sessionStorage.getItem('newProjectData');
@@ -701,7 +703,7 @@
                     const newProjectData = JSON.parse(newProjectDataStr);
                     const finalIntegrity = Math.max(0, Math.min(100, 100 - finalScore + Math.floor(Math.random() * 20) - 10));
 
-                    // 使用用户输入的项目名称（优先使用 name，如果没有则使用 verifyProject）
+                    // 使用用户输入的项目名称（优先使用 name，如果没有则使用 URL 参数）
                     actualProjectName = newProjectData.name || projectName;
 
                     // 构建完整的项目数据
@@ -730,13 +732,20 @@
                 }
             }
 
-            // 使用实际的项目名称跳转
-            sessionStorage.setItem('viewProject', actualProjectName);
-            window.location.href = 'project-detail.html';
+            // 使用 URL 参数传递项目名称（更可靠）
+            window.location.href = `project-detail.html?project=${encodeURIComponent(actualProjectName)}`;
         }
 
-        // 获取要验证的项目名
-        const projectName = sessionStorage.getItem('verifyProject') || 'Azuki';
+        // 从 URL 参数获取要验证的项目名（更可靠）
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectName = urlParams.get('project');
+
+        // 如果没有项目名称参数，提示用户并返回首页
+        if (!projectName) {
+            alert('验证会话已过期，请返回首页重新验证');
+            window.location.href = 'index.html';
+        }
+
         document.querySelectorAll('.project-name').forEach(el => {
             el.textContent = projectName;
         });

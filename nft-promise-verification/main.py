@@ -29,6 +29,9 @@ from utils.logger import setup_logging
 def main():
     """主函数"""
     # 加载环境变量
+    env_path = project_root / "config" / ".env"
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
     load_dotenv()
 
     # 设置日志

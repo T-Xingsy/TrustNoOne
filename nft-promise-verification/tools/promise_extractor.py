@@ -66,7 +66,7 @@ class PromiseExtractor:
             prompt = self._build_extraction_prompt(text, source_type)
 
             # 调用 LLM
-            response = self.llm_manager.generate(
+            response = self.llm_manager.chat(
                 prompt=prompt,
                 temperature=0.3,  # 低温度以获得更确定的输出
                 max_tokens=2000

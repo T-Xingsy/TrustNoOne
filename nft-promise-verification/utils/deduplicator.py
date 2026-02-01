@@ -79,11 +79,18 @@ class Deduplicator:
             else:
                 # 初始化 sources 列表
                 promise_copy = promise.copy()
+                source_metadata = promise.get("metadata", {}) or {}
+                if promise.get("source_id"):
+                    source_metadata = {
+                        **source_metadata,
+                        "source_id": promise.get("source_id", "")
+                    }
                 promise_copy["sources"] = [{
                     "source_type": promise.get("source_type", ""),
                     "source_url": promise.get("source_url", ""),
                     "source_id": promise.get("source_id", ""),
                     "created_at": promise.get("created_at", ""),
+                    "metadata": source_metadata
                 }]
                 content_map[content] = promise_copy
 
@@ -165,11 +172,18 @@ class Deduplicator:
             }]
 
         # 添加第二个承诺的来源
+        source2_metadata = promise2.get("metadata", {}) or {}
+        if promise2.get("source_id"):
+            source2_metadata = {
+                **source2_metadata,
+                "source_id": promise2.get("source_id", "")
+            }
         source2 = {
             "source_type": promise2.get("source_type", ""),
             "source_url": promise2.get("source_url", ""),
             "source_id": promise2.get("source_id", ""),
             "created_at": promise2.get("created_at", ""),
+            "metadata": source2_metadata
         }
 
         # 避免重复添加相同来源

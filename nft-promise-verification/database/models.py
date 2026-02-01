@@ -4,7 +4,7 @@
 使用 Pydantic 定义所有数据实体模型
 """
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -191,16 +191,13 @@ class VerificationRecord(BaseModel):
     unverifiable_count: int = Field(..., ge=0, description="无法验证数量")
     report_details: ReportDetails = Field(..., description="详细报告内容")
 
-    @field_validator('total_promises')
-    @classmethod
-    def validate_total_promises(cls, v, info):
+    @model_validator(mode='after')
+    def validate_promise_counts(self):
         """验证承诺总数等于各状态数量之和"""
-        fulfilled = info.data.get('fulfilled_count', 0)
-        unfulfilled = info.data.get('unfulfilled_count', 0)
-        unverifiable = info.data.get('unverifiable_count', 0)
-        if v != fulfilled + unfulfilled + unverifiable:
-            raise ValueError('承诺总数必须等于各状态数量之和')
-        return v
+        total = self.fulfilled_count + self.unfulfilled_count + self.unverifiable_count
+        if self.total_promises != total:
+            raise ValueError(f'承诺总数({self.total_promises})必须等于各状态数量之和({total})')
+        return self
 
 
 class PrivacyStorageRecord(BaseModel):

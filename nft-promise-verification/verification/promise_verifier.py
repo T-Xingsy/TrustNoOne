@@ -7,8 +7,8 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 import structlog
 
-from ..database.models import PromiseType, VerificationStatus
-from ..tools.evm_tools import EVMTools
+from database.models import PromiseType, VerificationStatus
+from tools.evm_tools import EVMTools
 
 logger = structlog.get_logger(__name__)
 
