@@ -1725,6 +1725,38 @@
             window.location.href = 'index.html';
         }
 
+        // 检查是否有新验证的项目需要添加到数据库
+        const newVerifiedProjectStr = sessionStorage.getItem('newVerifiedProject');
+        if (newVerifiedProjectStr) {
+            try {
+                const newProject = JSON.parse(newVerifiedProjectStr);
+
+                // 加载现有项目
+                const projects = loadProjectsFromStorage();
+
+                // 检查是否已存在同名项目
+                const existingIndex = projects.findIndex(p => p.name.toLowerCase() === newProject.name.toLowerCase());
+
+                if (existingIndex >= 0) {
+                    // 更新现有项目
+                    projects[existingIndex] = newProject;
+                } else {
+                    // 添加新项目
+                    projects.push(newProject);
+                }
+
+                // 保存到 localStorage
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+
+                console.log('新验证项目已添加到数据库:', newProject.name);
+
+                // 清除 sessionStorage
+                sessionStorage.removeItem('newVerifiedProject');
+            } catch (e) {
+                console.error('处理新验证项目失败:', e);
+            }
+        }
+
         // 加载项目数据并更新页面
         updatePageWithProjectData(projectName);
 
