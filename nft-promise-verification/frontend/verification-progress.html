@@ -463,7 +463,7 @@
             <div class="verifying-state" id="verifyingState">
                 <div class="verification-header">
                     <h1 class="verification-title">正在验证项目</h1>
-                    <p class="verification-subtitle">项目: <span class="project-name">Azuki</span></p>
+                    <p class="verification-subtitle">项目: <span class="project-name" id="verifyingProjectName">--</span></p>
                 </div>
 
                 <!-- 进度条 -->
@@ -527,7 +527,7 @@
             <div class="complete-state" id="completeState">
                 <div class="verification-header">
                     <h1 class="verification-title">验证完成</h1>
-                    <p class="verification-subtitle">项目: <span class="project-name">Azuki</span></p>
+                    <p class="verification-subtitle">项目: <span class="project-name" id="displayProjectName">--</span></p>
                 </div>
 
                 <div class="score-label">画饼指数</div>
@@ -550,37 +550,14 @@
         let finalRisk = 'high';
         let finalStatus = '严重画饼';
 
-        const steps = [
-            {
-                id: 'step1',
-                title: '收集承诺',
-                details: ['正在抓取 @AzukiEN 的推文...', '找到 127 条推文', '正在分析官网内容...', '提取到 15 条承诺']
-            },
-            {
-                id: 'step2',
-                title: '链上验证',
-                details: ['正在查询合约事件...', '分析锁定事件...', '检查 NFT 转账记录...', '验证国库余额...']
-            },
-            {
-                id: 'step3',
-                title: '五维评分',
-                details: ['计算诚信得分...', '分析代币分布...', '检查 GitHub 活跃度...', '评估社区动能...']
-            },
-            {
-                id: 'step4',
-                title: '生成报告',
-                details: ['汇总验证结果...', '计算画饼指数...', '生成最终报告...']
-            }
-        ];
-
-        const thinkingMessages = [
-            '已找到 3 条空投相关承诺',
-            '检测到 500 ETH 锁定承诺，正在验证...',
-            '国库地址: 0x7E1F...3A2F，当前余额: 127 ETH',
-            'GitHub: azukiateam/azuki-earth',
-            'OpenSea地板价: 5.2 ETH',
-            '诚信得分: 32/100 (高风险)'
-        ];
+        // 全局变量（会在startVerification中初始化）
+        let steps = [];
+        let thinkingMessages = [];
+        let currentProjectData = {
+            name: '',
+            twitter: '@unknown',
+            contract: '0x0000000000000000000000000000000000000000'
+        };
 
         function updateProgress() {
             const fill = document.getElementById('progressFill');
@@ -676,18 +653,117 @@
             };
         }
 
-        function startVerification() {
-            activateStep(0);
-            updateThinking();
+        // 基于项目名称生成动态的步骤详情
+        function generateSteps(projectName, twitterAccount) {
+            let hash = 0;
+            for (let i = 0; i < projectName.length; i++) {
+                hash = ((hash << 5) - hash) + projectName.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const absHash = Math.abs(hash);
 
-            // 获取项目名称并生成固定分数
+            const tweetCount = 50 + (absHash % 200); // 50-250条推文
+            const promiseCount = 8 + (absHash % 12); // 8-20条承诺
+
+            return [
+                {
+                    id: 'step1',
+                    title: '收集承诺',
+                    details: [
+                        `正在抓取 ${twitterAccount} 的推文...`,
+                        `找到 ${tweetCount} 条推文`,
+                        '正在分析官网内容...',
+                        `提取到 ${promiseCount} 条承诺`
+                    ]
+                },
+                {
+                    id: 'step2',
+                    title: '链上验证',
+                    details: ['正在查询合约事件...', '分析锁定事件...', '检查 NFT 转账记录...', '验证国库余额...']
+                },
+                {
+                    id: 'step3',
+                    title: '五维评分',
+                    details: ['计算诚信得分...', '分析代币分布...', '检查 GitHub 活跃度...', '评估社区动能...']
+                },
+                {
+                    id: 'step4',
+                    title: '生成报告',
+                    details: ['汇总验证结果...', '计算画饼指数...', '生成最终报告...']
+                }
+            ];
+        }
+
+        // 基于项目名称生成动态的思考消息
+        function generateThinkingMessages(projectName, contract, score) {
+            let hash = 0;
+            for (let i = 0; i < projectName.length; i++) {
+                hash = ((hash << 5) - hash) + projectName.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const absHash = Math.abs(hash);
+
+            const airdropCount = 1 + (absHash % 5); // 1-5条空投承诺
+            const lockAmount = 100 + (absHash % 900); // 100-1000 ETH
+            const balance = 20 + (absHash % 300); // 20-320 ETH
+            const floorPrice = 0.5 + (absHash % 50) / 10; // 0.5-5.5 ETH
+            const integrity = Math.max(20, Math.min(95, 60 + (absHash % 40) - 20));
+
+            // 生成一个假的GitHub仓库名
+            const githubRepo = projectName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+            return [
+                `已找到 ${airdropCount} 条空投相关承诺`,
+                `检测到 ${lockAmount} ETH 锁定承诺，正在验证...`,
+                `国库地址: ${contract.substring(0, 6)}...${contract.substring(38)}, 当前余额: ${balance} ETH`,
+                `GitHub: ${githubRepo}/${githubRepo}-nft`,
+                `OpenSea地板价: ${floorPrice.toFixed(1)} ETH`,
+                `诚信得分: ${integrity}/100 (${integrity < 50 ? '高风险' : integrity < 70 ? '中风险' : '低风险'})`
+            ];
+        }
+
+        function startVerification() {
+            // 获取项目信息
             const urlParams = new URLSearchParams(window.location.search);
             const projectName = urlParams.get('project') || 'Unknown';
+
+            // 获取用户输入的项目数据
+            const newProjectDataStr = sessionStorage.getItem('newProjectData');
+            let twitterAccount = '@unknown';
+            let contractAddress = '0x0000000000000000000000000000000000000000';
+
+            if (newProjectDataStr) {
+                try {
+                    const newProjectData = JSON.parse(newProjectDataStr);
+                    twitterAccount = newProjectData.twitter || '@unknown';
+                    contractAddress = newProjectData.contract || '0x0000000000000000000000000000000000000000';
+                } catch (e) {
+                    console.error('解析项目数据失败:', e);
+                }
+            }
+
+            // 保存项目数据到全局变量
+            currentProjectData = {
+                name: projectName,
+                twitter: twitterAccount,
+                contract: contractAddress
+            };
+
+            // 更新页面上的项目名称显示
+            document.getElementById('verifyingProjectName').textContent = projectName;
+            document.getElementById('displayProjectName').textContent = projectName;
+
+            // 生成动态的steps和thinking messages
+            steps = generateSteps(projectName, twitterAccount);
+            thinkingMessages = generateThinkingMessages(projectName, contractAddress, 0);
 
             // 生成基于项目名称的固定分数
             finalScore = generateFixedScore(projectName);
             finalRisk = finalScore >= 60 ? 'high' : finalScore >= 40 ? 'medium' : 'low';
             finalStatus = finalRisk === 'high' ? '严重画饼' : finalRisk === 'medium' ? '中度画饼' : '可信';
+
+            activateStep(0);
+            updateThinking();
 
             const interval = setInterval(() => {
                 if (progress < 100) {
