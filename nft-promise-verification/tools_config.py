@@ -2,12 +2,13 @@
 工具配置模块
 
 注册和配置 SpoonOS 工具
-- TwitterTool
+- TwitterTool (使用 bird skill)
 - WebScraperTool
-- MCPWebScraperTool (新增: MCP 协议抓取)
+- MCPWebScraperTool (MCP 协议抓取)
 - PromiseExtractorTool
 - Chainbase 链上数据工具
-- GitHub 开发力审计工具
+- GitHub 开发力审计工具 (使用 gh CLI skill)
+- Excel 报告生成工具 (使用 excel skill)
 """
 from typing import List, Any
 from spoon_ai.tools import BaseTool, ToolManager
@@ -18,6 +19,13 @@ from tools.twitter_scraper import TwitterScraper
 from tools.web_scraper import WebScraper
 from tools.mcp_scraper import SyncMCPWebScraper
 from tools.promise_extractor import PromiseExtractor
+
+# Skill 适配器
+from tools.skill_adapters import (
+    TwitterSkillAdapter,
+    GitHubSkillAdapter,
+    ExcelSkillAdapter
+)
 
 # Spoon-Toolkit 官方工具
 try:
@@ -442,18 +450,47 @@ def register_tools(llm_manager) -> ToolManager:
     # 收集所有工具到列表
     tools = []
 
-    # ========== 原有工具 ==========
-    twitter_tool = TwitterTool()
-    web_scraper_tool = WebScraperTool()
-    mcp_web_scraper_tool = MCPWebScraperTool()  # 新增: MCP 网页抓取
-    promise_extractor_tool = PromiseExtractorTool(llm_manager)
+    # ========== 核心工具 ==========
 
+    # 1. Twitter 抓取 - 使用 Skill 适配器（推荐）
+    try:
+        twitter_skill = TwitterSkillAdapter()
+        tools.append(twitter_skill)
+        logger.info("Twitter Skill 适配器已注册 (使用 bird skill)")
+    except Exception as e:
+        logger.warning("Twitter Skill 适配器注册失败，回退到原有实现", error=str(e))
+        twitter_tool = TwitterTool()
+        tools.append(twitter_tool)
+
+    # 2. 网页抓取工具
+    web_scraper_tool = WebScraperTool()
+    mcp_web_scraper_tool = MCPWebScraperTool()
     tools.extend([
-        twitter_tool,
         web_scraper_tool,
-        mcp_web_scraper_tool,
-        promise_extractor_tool
+        mcp_web_scraper_tool
     ])
+
+    # 3. 承诺提取工具
+    promise_extractor_tool = PromiseExtractorTool(llm_manager)
+    tools.append(promise_extractor_tool)
+
+    # ========== Skill 增强工具 ==========
+
+    # 4. GitHub 工具 - 使用 Skill 适配器
+    try:
+        github_skill = GitHubSkillAdapter()
+        tools.append(github_skill)
+        logger.info("GitHub Skill 适配器已注册 (使用 gh CLI)")
+    except Exception as e:
+        logger.warning("GitHub Skill 适配器注册失败", error=str(e))
+
+    # 5. Excel 报告生成 - 使用 Skill 适配器
+    try:
+        excel_skill = ExcelSkillAdapter()
+        tools.append(excel_skill)
+        logger.info("Excel Skill 适配器已注册")
+    except Exception as e:
+        logger.warning("Excel Skill 适配器注册失败", error=str(e))
 
     # ========== Chainbase 链上数据工具 ==========
     if CHAINBASE_AVAILABLE:
@@ -471,14 +508,14 @@ def register_tools(llm_manager) -> ToolManager:
             chainbase_metadata_tool
         ])
 
-        logger.info("Chainbase 工具注册成功")
+        logger.info("Chainbase MCP 工具注册成功")
     else:
         logger.warning(
             "Chainbase 工具不可用，请安装 spoon-toolkit: "
             "pip install spoon-toolkit"
         )
 
-    # ========== GitHub 开发力审计工具 ==========
+    # ========== 原有 GitHub 开发力审计工具 (保留作为 Fallback) ==========
     if GITHUB_AVAILABLE:
         github_commits_tool = GetGitHubCommitsTool()
         github_prs_tool = GetGitHubPullRequestsTool()
@@ -490,10 +527,10 @@ def register_tools(llm_manager) -> ToolManager:
             github_issues_tool
         ])
 
-        logger.info("GitHub 工具注册成功")
+        logger.info("原有 GitHub 工具已注册 (作为 Fallback)")
     else:
         logger.warning(
-            "GitHub 工具不可用，请安装 spoon-toolkit: "
+            "原有 GitHub 工具不可用，请安装 spoon-toolkit: "
             "pip install spoon-toolkit"
         )
 
